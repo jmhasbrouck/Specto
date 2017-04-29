@@ -1,0 +1,4 @@
+/home/james/Documents/CingSnd/cpp/lib/CMakeFiles/rebuild_cache.dir
+/home/james/Documents/CingSnd/cpp/lib/CMakeFiles/SndReader.dir
+/home/james/Documents/CingSnd/cpp/lib/CMakeFiles/edit_cache.dir
+/home/james/Documents/CingSnd/cpp/lib/CMakeFiles/Spectrogram.dir

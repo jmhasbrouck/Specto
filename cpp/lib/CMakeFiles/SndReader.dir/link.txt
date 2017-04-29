@@ -1,0 +1,1 @@
+/usr/bin/cc  -fPIC   -shared -Wl,-soname,libSndReader.so -o libSndReader.so CMakeFiles/SndReader.dir/src/SndFile.c.o CMakeFiles/SndReader.dir/src/window.c.o CMakeFiles/SndReader.dir/src/common.c.o -lsndfile -lfftw3 -lm 

@@ -1,0 +1,38 @@
+// hello.cc
+#include <node.h>
+#include <iostream>
+namespace GetPointer {
+
+using v8::FunctionCallbackInfo;
+using v8::Isolate;
+using v8::Local;
+using v8::Object;
+using v8::String;
+using v8::Value;
+
+void Method(const FunctionCallbackInfo<Value>& args) {
+  Isolate* isolate = args.GetIsolate();
+  uintptr_t retval = 0;
+  Local<Value> bufferview = args[4]->ToObject();
+  Local<ArrayBufferView> buffer = Local<ArrayBufferView>::Cast(bufferview);
+  if (buffer->HasBuffer()){
+    char* localData = (char*)buffer->Buffer()->GetContents().Data();
+    std::cout <<"Getting buffer\n";
+    if (buffer->Buffer()->GetContents().ByteLength() != (size_t)(height * width * 3)) {
+      std::cout <<"Buffer is not the correct size! " << __FILE__ << ":" << __LINE__ << std::endl;
+    }
+    else {
+      std::cout << retval << std::endl;
+      retval = (uintptr_t)localData;
+    }
+  }
+  args.GetReturnValue().Set(Number::New(isolate, retval));
+}
+
+void init(Local<Object> exports) {
+  NODE_SET_METHOD(exports, "hello", Method);
+}
+
+NODE_MODULE(addon, init)
+
+}  // namespace demo

@@ -1,0 +1,14 @@
+{
+  "name": "Spectrogram Viewer",
+  "version": "0.1.0",
+  "main": "main.js",
+  "devDependencies": {
+    "pan-zoom": "^2.0.0",
+    "webworker-threads": "^0.7.11"
+  },
+  "dependencies": {
+    "panzoom": "^2.5.0",
+    "threads": "^0.7.2",
+    "tiny-worker": "^2.1.0"
+  }
+}

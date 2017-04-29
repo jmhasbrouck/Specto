@@ -1,0 +1,1 @@
+/usr/bin/c++  -fPIC  -std=gnu++0x  -shared -Wl,-soname,libSpectrogram.so -o libSpectrogram.so CMakeFiles/Spectrogram.dir/src/Spectrogram.cpp.o libSndReader.so -lsndfile -lfftw3 -lm -Wl,-rpath,/home/james/Documents/CingSnd/cpp/lib 
