@@ -8,7 +8,7 @@
 #include <node_object_wrap.h>
 #include "Spectrogram.h"
 namespace ElectronLAC {
-class SPGWrapper : public node::ObjectWrap {
+  class SPGWrapper : public node::ObjectWrap{
  public:
   static void Init(v8::Local<v8::Object> exports);
   

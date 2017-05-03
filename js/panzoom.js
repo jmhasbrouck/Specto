@@ -969,6 +969,7 @@
 			e.preventDefault();
 			e.stopPropagation();
 			self._startMove(e, touches);
+			
 		    }
 		};
 		// Prevent the contextmenu event
@@ -1123,7 +1124,7 @@
 	 */
 	_startMove: function(event, touches) {
 	    if (this.panning) {
-		return;
+		return true;
 	    }
 	    var moveEvent, endEvent,
 		startDistance, startScale, startMiddle,
@@ -1170,15 +1171,15 @@
 		if (touches) {
 		    if (touches.length === 2) {
 			if (startDistance != null) {
-			    return;
+			    return true;
 			}
 			startDistance = self._getDistance(touches);
 			startScale = +matrix[0];
 			startMiddle = self._getMiddle(touches);
-			return;
+			return true;
 		    }
 		    if (startPageX != null) {
-			return;
+			return true;
 		    }
 		    if ((touch = touches[0])) {
 			startPageX = touch.pageX;
@@ -1186,7 +1187,7 @@
 		    }
 		}
 		if (startPageX != null) {
-		    return;
+		    return true;
 		}
 		startPageX = event.pageX;
 		startPageY = event.pageY;
@@ -1221,7 +1222,7 @@
 			    panOptions
 			);
 			startMiddle = middle;
-			return;
+			return true;
 		    }
 		    coords = touches[0] || { pageX: 0, pageY: 0 };
 		}
@@ -1252,6 +1253,7 @@
 		    e.type = 'panzoomend';
 		    self._trigger(e, matrix, !matrixEquals(matrix, original));
 		});
+	    return true;
 	}
     };
 

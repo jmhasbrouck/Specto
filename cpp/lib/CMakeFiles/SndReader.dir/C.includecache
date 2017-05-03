@@ -1,4 +1,4 @@
-#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
 
 #IncludeRegexScan: ^.*$
 
@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/james/Documents/CingSnd/cpp/lib/src/SndFile.c
+/Users/jameshasbrouck/CingSnd/cpp/lib/src/SndFile.c
 stdio.h
 -
 stdlib.h
@@ -24,13 +24,13 @@ fenv.h
 sndfile.h
 -
 SndFile.h
-/home/james/Documents/CingSnd/cpp/lib/src/SndFile.h
+/Users/jameshasbrouck/CingSnd/cpp/lib/src/SndFile.h
 window.h
-/home/james/Documents/CingSnd/cpp/lib/src/window.h
+/Users/jameshasbrouck/CingSnd/cpp/lib/src/window.h
 common.h
-/home/james/Documents/CingSnd/cpp/lib/src/common.h
+/Users/jameshasbrouck/CingSnd/cpp/lib/src/common.h
 
-/home/james/Documents/CingSnd/cpp/lib/src/SndFile.h
+/Users/jameshasbrouck/CingSnd/cpp/lib/src/SndFile.h
 stdio.h
 -
 stdlib.h
@@ -44,27 +44,27 @@ math.h
 fftw3.h
 -
 sndfile.h
-/home/james/Documents/CingSnd/cpp/lib/src/sndfile.h
+/Users/jameshasbrouck/CingSnd/cpp/lib/src/sndfile.h
 window.h
-/home/james/Documents/CingSnd/cpp/lib/src/window.h
+/Users/jameshasbrouck/CingSnd/cpp/lib/src/window.h
 common.h
-/home/james/Documents/CingSnd/cpp/lib/src/common.h
+/Users/jameshasbrouck/CingSnd/cpp/lib/src/common.h
 
-/home/james/Documents/CingSnd/cpp/lib/src/common.c
+/Users/jameshasbrouck/CingSnd/cpp/lib/src/common.c
 config.h
-/home/james/Documents/CingSnd/cpp/lib/src/config.h
+/Users/jameshasbrouck/CingSnd/cpp/lib/src/config.h
 string.h
 -
 common.h
-/home/james/Documents/CingSnd/cpp/lib/src/common.h
+/Users/jameshasbrouck/CingSnd/cpp/lib/src/common.h
 
-/home/james/Documents/CingSnd/cpp/lib/src/common.h
+/Users/jameshasbrouck/CingSnd/cpp/lib/src/common.h
 sndfile.h
 -
 
-/home/james/Documents/CingSnd/cpp/lib/src/config.h
+/Users/jameshasbrouck/CingSnd/cpp/lib/src/config.h
 
-/home/james/Documents/CingSnd/cpp/lib/src/window.c
+/Users/jameshasbrouck/CingSnd/cpp/lib/src/window.c
 stdio.h
 -
 stdlib.h
@@ -74,7 +74,7 @@ assert.h
 math.h
 -
 window.h
-/home/james/Documents/CingSnd/cpp/lib/src/window.h
+/Users/jameshasbrouck/CingSnd/cpp/lib/src/window.h
 
-/home/james/Documents/CingSnd/cpp/lib/src/window.h
+/Users/jameshasbrouck/CingSnd/cpp/lib/src/window.h
 

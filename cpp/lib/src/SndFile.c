@@ -7,6 +7,7 @@
 #include <fftw3.h>
 #include <fenv.h>
 #include <sndfile.h>
+//#include <omp.h>
 #include "SndFile.h"
 #include "window.h"
 #include "common.h"
@@ -28,6 +29,8 @@
 #define	BOTTOM_BORDER		40.0
 
 #define	SPEC_FLOOR_DB		-180.0
+
+#define DEBUG 
 
 static unsigned char *staticData = 0;
 
@@ -168,26 +171,34 @@ render_spectrogram (double spec_floor_db, float mag2d [MAX_WIDTH][MAX_HEIGHT], d
 	unsigned char colour [3] = { 0, 0, 0 } ;
 	
 	double linear_spec_floor ;
-	int w, h, stride ;
+	int w, h, stride, hght, wdth ;
 	w = 0;
 	h = 0;
-
-	memset(staticData, 0, width*height*3);
+	hght = (int)height;
+	wdth = (int)width;
+#ifdef DEBUG
+	printf("height: %f, width: %f\n", height, width);
+#endif
 	linear_spec_floor = pow (10.0, spec_floor_db / 20.0) ;
 	size_t counter = 0;
-	for (w = 0 ; w < (int)width ; w ++)
-	  for (h = 0 ; h < (int)height ; h++)
-		{	int x, y ;
-		  mag2d [w][h] = mag2d [w][h] / maxval ;
-		  mag2d [w][h] = (mag2d [w][h] < linear_spec_floor) ? spec_floor_db : 20.0 * log10 (mag2d [w][h]) ;
-		  
-		  get_colour_map_value (mag2d [w][h], spec_floor_db, colour) ;
-		  staticData[counter++] = colour[0];
-		  staticData[counter++] = colour[1];
-		  staticData[counter++] = colour[2];
-		} ;
+	//#pragma omp parallel for simd collapse(2) schedule(dynamic)
+	for (w = 0 ; w < wdth ; w ++) {
+	  for (h = 0 ; h < hght ; h ++) {
+	  mag2d [w][h] = mag2d [w][h] / maxval ;
+	  mag2d [w][h] = (mag2d [w][h] < linear_spec_floor) ? spec_floor_db : 20.0 * log10 (mag2d [w][h]) ;
+	  
+	  get_colour_map_value (mag2d [w][h], spec_floor_db, colour) ;
+	  
+	  staticData[(h + hght*w)*3] = colour[0];
+	  staticData[(h + hght*w)*3 + 1] = colour[1];
+	  staticData[(h + hght*w)*3 + 2] = colour[2];
+	  
+	}
+	}
 	
-	
+#ifdef DEBUG
+	printf("done with data\n");
+#endif
 } /* render_spectrogram */
 
 
@@ -237,8 +248,8 @@ render_to_surface (const RENDER * render, SNDFILE *infile, int samplerate, sf_co
 	**	to 20Hz, and then increase it slightly so it is a multiple of 0x40 so that
 	**	FFTW calculations will be quicker.
 	*/
-	speclen = height * (samplerate / 20 / height + 1) ;
-	speclen += 0x40 - (speclen & 0x3f) ;
+	speclen = height * (samplerate / 20 / height + 1);
+	speclen += 0x40 - (speclen & 0x3f);
 	if (2 * speclen > ARRAY_LEN (time_domain))
 	{	printf ("%s : 2 * speclen > ARRAY_LEN (time_domain)\n", __func__) ;
 		exit (1) ;
@@ -248,24 +259,24 @@ render_to_surface (const RENDER * render, SNDFILE *infile, int samplerate, sf_co
 	if (plan == NULL)
 	{	printf ("%s : line %d : create plan failed.\n", __FILE__, __LINE__) ;
 		exit (1) ;
-		} ;
-	
-	for (w = render->dataOffset ; w < width + render->dataOffset; w++)
-	{	double single_max ;
-
-	  read_mono_audio (infile, filelen, time_domain, 2 * speclen, w, width, 1) ;
-	  
-	  apply_window (time_domain, 2 * speclen) ;
-	  
-	  fftw_execute (plan) ;
-	  
-	  single_max = calc_magnitude (freq_domain, 2 * speclen, single_mag_spec) ;
-		
-	  max_mag = MAX (max_mag, single_max) ;
-	  
-	  interp_spec (mag_spec [w - render->dataOffset], height, single_mag_spec, speclen) ;
 	} ;
-	
+	double single_max;
+	//#pragma omp parallel for simd schedule(dynamic) reduction(max:max_mag, single_max)
+	for (w = 0 ; w < width; w++)
+	  {
+	    read_mono_audio (infile, filelen, time_domain, 2 * speclen, w, width, 1) ;
+	    apply_window (time_domain, 2 * speclen) ;	      
+	    fftw_execute (plan) ;
+
+	    single_max = calc_magnitude (freq_domain, 2 * speclen, single_mag_spec) ;
+	    max_mag = MAX(max_mag, single_max);
+	    
+	    interp_spec (mag_spec [w - render->dataOffset], height, single_mag_spec, speclen) ;
+	  } ;
+
+#ifdef DEBUG
+	printf("here before render\n");
+#endif
 	fftw_destroy_plan (plan) ;
 	render_spectrogram (render->spec_floor_db, mag_spec, max_mag, width, height) ;
 			
@@ -297,12 +308,13 @@ render_sndfile (const RENDER * render)
 	{	printf ("Error : failed to open file '%s' : \n%s\n", render->sndfilepath, sf_strerror (NULL)) ;
 		return retval;
 		} ;
+#ifdef DEBUG
 	printf("sections %d, channels %d, frames %d, samplerate %d\n", (int)info.sections, (int)info.channels, (int)info.frames, (int)info.samplerate);
+#endif
 	retval.frames = info.frames;
 	retval.samplerate = info.samplerate;
 	render_cairo_surface (render, infile, info.samplerate, info.frames);
 	sf_close (infile) ;
-
 	return retval;
 } /* render_sndfile */
 
@@ -314,7 +326,7 @@ check_int_range (const char * name, int value, int lower, int upper)
 		exit (1) ;
 		} ;
 } /* check_int_range */
-MY_INFO getSpecData(char* data, const char* fileName, int dataOffset, int height, int width, double minDb)
+MY_INFO getSpecData(char* data, const char* fileName, int height, int width, double minDb)
 {	RENDER render =
 	{	NULL, NULL, NULL,
 		0, 0,
@@ -323,6 +335,11 @@ MY_INFO getSpecData(char* data, const char* fileName, int dataOffset, int height
 		} ;
 	int k ;
 	staticData = data;
+	if (staticData == 0) {
+	  MY_INFO empty;
+	  return empty;
+	}
+	memset(staticData, 0, height*width*3);
 	render.border = false ;
 	render.spec_floor_db = minDb;
 	render.sndfilepath = fileName;
@@ -331,9 +348,7 @@ MY_INFO getSpecData(char* data, const char* fileName, int dataOffset, int height
 	render.height = height ;
 	render.filename = strrchr (render.sndfilepath, '/') ;
 	render.filename = (render.filename != NULL) ? render.filename + 1 : render.sndfilepath ;
-	render.dataOffset = dataOffset;
 	MY_INFO info = render_sndfile (&render);
-	printf("done");
 	return info;
 	
 } 

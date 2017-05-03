@@ -2,14 +2,23 @@
 #include <node.h>
 #include <iostream>
 namespace GetPointer {
-
-using v8::FunctionCallbackInfo;
-using v8::Isolate;
-using v8::Local;
-using v8::Object;
-using v8::String;
-using v8::Value;
-
+  using v8::Context;
+  using v8::Function;
+  using v8::FunctionCallbackInfo;
+  using v8::FunctionTemplate;
+  using v8::Isolate;
+  using v8::Local;
+  using v8::Number;
+  using v8::Integer;
+  using v8::Handle;
+  using v8::Array;
+  using v8::Object;
+  using v8::Persistent;
+  using v8::String;
+  using v8::Value;
+  using v8::Uint8Array;
+  using v8::ArrayBufferView;
+  
 void GetPointer(const FunctionCallbackInfo<Value>& args) {
   Isolate* isolate = args.GetIsolate();
   uintptr_t retval = 0;
@@ -18,13 +27,9 @@ void GetPointer(const FunctionCallbackInfo<Value>& args) {
   if (buffer->HasBuffer()){
     char* localData = (char*)buffer->Buffer()->GetContents().Data();
     std::cout <<"Getting buffer\n";
-    if (buffer->Buffer()->GetContents().ByteLength() != (size_t)(height * width * 3)) {
-      std::cout <<"Buffer is not the correct size! " << __FILE__ << ":" << __LINE__ << std::endl;
-    }
-    else {
-      std::cout << retval << std::endl;
-      retval = (uintptr_t)localData;
-    }
+    
+    retval = (uintptr_t)localData;
+    std::cout << retval << std::endl;
   }
   else {
     std::cout << "buffer has no data" << std::endl;
@@ -37,6 +42,6 @@ void init(Local<Object> exports) {
   NODE_SET_METHOD(exports, "GetDataPointer", GetPointer);
 }
 
-NODE_MODULE(addon, init)
+NODE_MODULE(GetPointer, init)
 
 }  // namespace demo

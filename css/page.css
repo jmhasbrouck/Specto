@@ -1,6 +1,6 @@
 :root {
     --viewport-height: 92.5;
-    --viewport-width: 90.0;
+    --viewport-width: 87.5;
     --left-right-bezel: calc(calc(calc(100 - var(--viewport-width)) / 2.0) * 1vw);
     --bottom-top-bezel: calc(calc(calc(100 - var(--viewport-height)) / 2.0) * 1vh);
 }
@@ -15,6 +15,7 @@ body {
 #container {
     position: fixed;
     pointer-events: auto;
+    border: solid white 0.5vh;
     height: calc(var(--viewport-height) * 1vh);
     width: calc(var(--viewport-width) * 1vw);
     left: var(--left-right-bezel);
@@ -22,19 +23,6 @@ body {
     top: calc(calc(calc(100 - var(--viewport-height)) / 2) * 1vh);
     cursor: move;
     z-index:1;
-}
-#border {
-    background-color: rgba(0,0,0,0);
-    border: solid white 0.5vh;
-    position: fixed;
-    height: calc(var(--viewport-height) * 1vh);
-    width: calc(var(--viewport-width) * 1vw);
-    left: var(--left-right-bezel);
-    right:  var(--left-right-bezel);
-    top: calc(calc(calc(100 - var(--viewport-height)) / 2) * 1vh);
-    cursor: default;
-    pointer-events:none;
-    z-index:2;
 }
 #xAxis{
     position: fixed;
@@ -50,7 +38,7 @@ body {
     width: var(--left-right-bezel);
     height: 100vh;
     left:0vw;
-    z-index:3;
+    z-index:2;
 }
 #mouseDiv {
     position:fixed;
@@ -61,38 +49,51 @@ body {
     background-color: rgba(0,0,0, 1.0);
     z-index:2;
 }
-#top {
-    position: fixed;
-    top: 0vh;
-    height: var(--bottom-top-bezel);
-    width: 100vw;
-    left:0vw;
-    background-color: rgba(0,0,0,1.0);
-    z-index:2;
+#opennew {
+    position: absolute;
+    font-family: "Lucida Console", "Lucida Sans Typewriter", monaco, "Bitstream Vera Sans Mono", monospace;
+    background-color: rgba(100, 100, 100, 0.25);
+    border: white solid;
+    border-radius: 10px;
+    color: white;
+    text-align: center;
+    font-size: larger;
+    left:10%;
+    top:80%;
+    width:90%;
 }
-
-#bottom-left{
-    position: fixed;
-    bottom: 0vh;
-    left: 0vw;
-    height: var(--bottom-top-bezel);
-    width: var(--left-right-bezel);
-    background-color: rgba(0,0,0,1.0);
-    pointer-events:none;
-    z-index:2;
+#screenshot{
+    position: absolute;
+    font-family: "Lucida Console", "Lucida Sans Typewriter", monaco, "Bitstream Vera Sans Mono", monospace;
+    background-color: rgba(100, 100, 100, 0.25);
+    border: white solid;
+    border-radius: 10px;
+    color: white;
+    text-align: center;
+    font-size: larger;
+    left:10%;
+    top:60%;
+    width:90%;
 }
-
-#bottom-right{
-    position: fixed;
-    bottom: 0vh;
-    right: 0vw;
-    height: var(--bottom-top-bezel);
-    width: var(--left-right-bezel);
-    background-color: rgba(0,0,0,1.0);
-    pointer-events:none;
-    z-index:2;
+#close {
+    position: absolute;
+    font-family: "Lucida Console", "Lucida Sans Typewriter", monaco, "Bitstream Vera Sans Mono", monospace;
+    background-color: rgba(100, 100, 100, 0.25);
+    border: white solid;
+    border-radius: 10px;
+    color: white;
+    text-align: center;
+    font-size: larger;
+    left:10%;
+    top:90%;
+    width:90%;
 }
-
+#audioplayer {
+    position: absolute;
+    background-color:rgba(0,0,0,0.25);
+    top:10%;
+    width:100%;
+}
 .sidenav {
     height: 100%;
     width: 0;
@@ -106,30 +107,12 @@ body {
     padding-top: 60px;
 }
 
-.sidenav a {
-    padding: 8px 8px 8px 32px;
-    text-decoration: none;
-    font-size: 25px;
-    color: #818181;
-    display: block;
-    transition: 0.3s;
-}
 
 .sidenav a:hover, .offcanvas a:focus{
     color: #f1f1f1;
 }
 
-.sidenav .closebtn {
-    position: absolute;
-    top: 0;
-    right: 25px;
-    font-size: 36px;
-    margin-left: 50px;
-}
-#openButton {
-    position: absolute;
-    right:0;
-}
+
 @media screen and (max-height: 450px) {
     .sidenav {padding-top: 15px;}
     .sidenav a {font-size: 18px;}

@@ -7,6 +7,7 @@ DEFS_Debug := \
 	'-DUSING_UV_SHARED=1' \
 	'-DUSING_V8_SHARED=1' \
 	'-DV8_DEPRECATION_WARNINGS=1' \
+	'-D_DARWIN_USE_64_BIT_INODE=1' \
 	'-D_LARGEFILE_SOURCE' \
 	'-D_FILE_OFFSET_BITS=64' \
 	'-DBUILDING_NODE_EXTENSION' \
@@ -15,69 +16,109 @@ DEFS_Debug := \
 
 # Flags passed to all source files.
 CFLAGS_Debug := \
-	-fPIC \
-	-pthread \
+	-O0 \
+	-gdwarf-2 \
+	-mmacosx-version-min=10.7 \
+	-arch x86_64 \
 	-Wall \
-	-Wextra \
-	-Wno-unused-parameter \
-	-m64 \
-	-g \
-	-O0
+	-Wendif-labels \
+	-W \
+	-Wno-unused-parameter
 
 # Flags passed to only C files.
-CFLAGS_C_Debug :=
+CFLAGS_C_Debug := \
+	-fno-strict-aliasing \
+	-mmacosx-version-min=10.7 \
+	-std=c++11 \
+	-stdlib=libc++ \
+	-O3 \
+	-D__STDC_CONSTANT_MACROS \
+	-D_FILE_OFFSET_BITS=64 \
+	-D_LARGEFILE_SOURCE \
+	-Wall
 
 # Flags passed to only C++ files.
 CFLAGS_CC_Debug := \
+	-std=gnu++0x \
 	-fno-rtti \
-	-fno-exceptions \
-	-std=gnu++0x
+	-fno-threadsafe-statics \
+	-mmacosx-version-min=10.7 \
+	-std=c++11 \
+	-stdlib=libc++ \
+	-O3 \
+	-Wall
+
+# Flags passed to only ObjC files.
+CFLAGS_OBJC_Debug :=
+
+# Flags passed to only ObjC++ files.
+CFLAGS_OBJCC_Debug :=
 
 INCS_Debug := \
-	-I/home/james/.node-gyp/iojs-1.4.15/include/node \
-	-I/home/james/.node-gyp/iojs-1.4.15/src \
-	-I/home/james/.node-gyp/iojs-1.4.15/deps/uv/include \
-	-I/home/james/.node-gyp/iojs-1.4.15/deps/v8/include
+	-I/Users/jameshasbrouck/.node-gyp/iojs-1.4.15/include/node \
+	-I/Users/jameshasbrouck/.node-gyp/iojs-1.4.15/src \
+	-I/Users/jameshasbrouck/.node-gyp/iojs-1.4.15/deps/uv/include \
+	-I/Users/jameshasbrouck/.node-gyp/iojs-1.4.15/deps/v8/include
 
 DEFS_Release := \
 	'-DNODE_GYP_MODULE_NAME=SPG' \
 	'-DUSING_UV_SHARED=1' \
 	'-DUSING_V8_SHARED=1' \
 	'-DV8_DEPRECATION_WARNINGS=1' \
+	'-D_DARWIN_USE_64_BIT_INODE=1' \
 	'-D_LARGEFILE_SOURCE' \
 	'-D_FILE_OFFSET_BITS=64' \
 	'-DBUILDING_NODE_EXTENSION'
 
 # Flags passed to all source files.
 CFLAGS_Release := \
-	-fPIC \
-	-pthread \
+	-Os \
+	-gdwarf-2 \
+	-mmacosx-version-min=10.7 \
+	-arch x86_64 \
 	-Wall \
-	-Wextra \
-	-Wno-unused-parameter \
-	-m64 \
-	-O3 \
-	-fno-omit-frame-pointer
+	-Wendif-labels \
+	-W \
+	-Wno-unused-parameter
 
 # Flags passed to only C files.
-CFLAGS_C_Release :=
+CFLAGS_C_Release := \
+	-fno-strict-aliasing \
+	-mmacosx-version-min=10.7 \
+	-std=c++11 \
+	-stdlib=libc++ \
+	-O3 \
+	-D__STDC_CONSTANT_MACROS \
+	-D_FILE_OFFSET_BITS=64 \
+	-D_LARGEFILE_SOURCE \
+	-Wall
 
 # Flags passed to only C++ files.
 CFLAGS_CC_Release := \
+	-std=gnu++0x \
 	-fno-rtti \
-	-fno-exceptions \
-	-std=gnu++0x
+	-fno-threadsafe-statics \
+	-mmacosx-version-min=10.7 \
+	-std=c++11 \
+	-stdlib=libc++ \
+	-O3 \
+	-Wall
+
+# Flags passed to only ObjC files.
+CFLAGS_OBJC_Release :=
+
+# Flags passed to only ObjC++ files.
+CFLAGS_OBJCC_Release :=
 
 INCS_Release := \
-	-I/home/james/.node-gyp/iojs-1.4.15/include/node \
-	-I/home/james/.node-gyp/iojs-1.4.15/src \
-	-I/home/james/.node-gyp/iojs-1.4.15/deps/uv/include \
-	-I/home/james/.node-gyp/iojs-1.4.15/deps/v8/include
+	-I/Users/jameshasbrouck/.node-gyp/iojs-1.4.15/include/node \
+	-I/Users/jameshasbrouck/.node-gyp/iojs-1.4.15/src \
+	-I/Users/jameshasbrouck/.node-gyp/iojs-1.4.15/deps/uv/include \
+	-I/Users/jameshasbrouck/.node-gyp/iojs-1.4.15/deps/v8/include
 
 OBJS := \
 	$(obj).target/$(TARGET)/SPGSource.o \
-	$(obj).target/$(TARGET)/SPGWrapper.o \
-	$(obj).target/$(TARGET)/GetDataPointer.o
+	$(obj).target/$(TARGET)/SPGWrapper.o
 
 # Add to the list of files we specially track dependencies for.
 all_deps += $(OBJS)
@@ -87,6 +128,8 @@ all_deps += $(OBJS)
 $(OBJS): TOOLSET := $(TOOLSET)
 $(OBJS): GYP_CFLAGS := $(DEFS_$(BUILDTYPE)) $(INCS_$(BUILDTYPE))  $(CFLAGS_$(BUILDTYPE)) $(CFLAGS_C_$(BUILDTYPE))
 $(OBJS): GYP_CXXFLAGS := $(DEFS_$(BUILDTYPE)) $(INCS_$(BUILDTYPE))  $(CFLAGS_$(BUILDTYPE)) $(CFLAGS_CC_$(BUILDTYPE))
+$(OBJS): GYP_OBJCFLAGS := $(DEFS_$(BUILDTYPE)) $(INCS_$(BUILDTYPE))  $(CFLAGS_$(BUILDTYPE)) $(CFLAGS_C_$(BUILDTYPE)) $(CFLAGS_OBJC_$(BUILDTYPE))
+$(OBJS): GYP_OBJCXXFLAGS := $(DEFS_$(BUILDTYPE)) $(INCS_$(BUILDTYPE))  $(CFLAGS_$(BUILDTYPE)) $(CFLAGS_CC_$(BUILDTYPE)) $(CFLAGS_OBJCC_$(BUILDTYPE))
 
 # Suffix rules, putting all outputs into $(obj).
 
@@ -104,40 +147,61 @@ $(obj).$(TOOLSET)/$(TARGET)/%.o: $(obj)/%.cc FORCE_DO_CMD
 # End of this set of suffix rules
 ### Rules for final target.
 LDFLAGS_Debug := \
-	-pthread \
-	-rdynamic \
-	-m64
+	-Wl,-search_paths_first \
+	-Wl,-rpath,/Users/jameshasbrouck/CingSnd/cpp/lib/ \
+	-L/Users/jameshasbrouck/CingSnd/cpp/lib \
+	-undefined dynamic_lookup \
+	-Wl,-no_pie \
+	-Wl,-search_paths_first \
+	-mmacosx-version-min=10.7 \
+	-arch x86_64 \
+	-L$(builddir)
+
+LIBTOOLFLAGS_Debug := \
+	-Wl,-search_paths_first \
+	-Wl,-rpath,/Users/jameshasbrouck/CingSnd/cpp/lib/ \
+	-L/Users/jameshasbrouck/CingSnd/cpp/lib/ \
+	-undefined dynamic_lookup \
+	-Wl,-no_pie \
+	-Wl,-search_paths_first
 
 LDFLAGS_Release := \
-	-pthread \
-	-rdynamic \
-	-m64
+	-Wl,-search_paths_first \
+	-Wl,-rpath,/Users/jameshasbrouck/CingSnd/cpp/lib/ \
+	-L/Users/jameshasbrouck/CingSnd/cpp/lib \
+	-undefined dynamic_lookup \
+	-Wl,-no_pie \
+	-Wl,-search_paths_first \
+	-mmacosx-version-min=10.7 \
+	-arch x86_64 \
+	-L$(builddir)
+
+LIBTOOLFLAGS_Release := \
+	-Wl,-search_paths_first \
+	-Wl,-rpath,/Users/jameshasbrouck/CingSnd/cpp/lib/ \
+	-L/Users/jameshasbrouck/CingSnd/cpp/lib/ \
+	-undefined dynamic_lookup \
+	-Wl,-no_pie \
+	-Wl,-search_paths_first
 
 LIBS := \
-	-Wl,-rpath,/home/james/Documents/CingSnd/cpp/lib/ \
-	-L/home/james/Documents/CingSnd/cpp/lib/ \
 	-lSpectrogram
 
-$(obj).target/SPG.node: GYP_LDFLAGS := $(LDFLAGS_$(BUILDTYPE))
-$(obj).target/SPG.node: LIBS := $(LIBS)
-$(obj).target/SPG.node: TOOLSET := $(TOOLSET)
-$(obj).target/SPG.node: $(OBJS) FORCE_DO_CMD
+$(builddir)/SPG.node: GYP_LDFLAGS := $(LDFLAGS_$(BUILDTYPE))
+$(builddir)/SPG.node: LIBS := $(LIBS)
+$(builddir)/SPG.node: GYP_LIBTOOLFLAGS := $(LIBTOOLFLAGS_$(BUILDTYPE))
+$(builddir)/SPG.node: TOOLSET := $(TOOLSET)
+$(builddir)/SPG.node: $(OBJS) FORCE_DO_CMD
 	$(call do_cmd,solink_module)
 
-all_deps += $(obj).target/SPG.node
+all_deps += $(builddir)/SPG.node
 # Add target alias
 .PHONY: SPG
 SPG: $(builddir)/SPG.node
 
-# Copy this to the executable output path.
-$(builddir)/SPG.node: TOOLSET := $(TOOLSET)
-$(builddir)/SPG.node: $(obj).target/SPG.node FORCE_DO_CMD
-	$(call do_cmd,copy)
-
-all_deps += $(builddir)/SPG.node
 # Short alias for building this executable.
 .PHONY: SPG.node
-SPG.node: $(obj).target/SPG.node $(builddir)/SPG.node
+SPG.node: $(builddir)/SPG.node
 
 # Add executable to "all" target.
 .PHONY: all

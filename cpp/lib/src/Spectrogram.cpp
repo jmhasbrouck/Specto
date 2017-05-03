@@ -9,7 +9,6 @@ Spectrogram::Spectrogram(std::string file)
 }
 
 void Spectrogram::getData(char* data,
-			  size_t dataOffset,
 			  size_t height,
 			  size_t width,
 			  double minDb) {
@@ -17,12 +16,12 @@ void Spectrogram::getData(char* data,
   this->height = height;
   this->width = width;
   this->minDb = minDb;
-  MY_INFO info = getSpecData(data, fileName.c_str(), 0, height, width, minDb);
+  MY_INFO info = getSpecData(data, fileName.c_str(), height, width, minDb);
   this->frames = (double)info.frames;
   this->samplerate = (double)info.samplerate;
   int speclen =  height * (info.samplerate / 20 / height + 1);
   speclen += 0x40 - (speclen & 0x3f) ;
-  this->freqres = (double)speclen;
+  this->freqres = this->samplerate / height;
 }
 // returns audio length in seconds
 double Spectrogram::getAudioLength() {

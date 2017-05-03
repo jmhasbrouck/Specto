@@ -10,35 +10,32 @@
 	<link rel="stylesheet" href="css/page.css">
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 	<script src="./js/panzoom.js"></script>
+	<script src="./js/audio.js"></script>
 	<script src="./js/globals.js"></script>
+	<script src="./js/matrix.js"></script>
 	<script src="./js/eventHandlers.js"></script>
 	<script src="./js/time.js"></script>
 	<script src="./js/xAxis.js"></script>
 	<script src="./js/yAxis.js"></script>
-	<script src="./js/ui.js"></script> 
+	<script src="./js/main.js"></script> 
 	<script src="./js/gl.js"></script>
     </head>
 
-    <body onload="uiInit()">
+    <body onload="init()">
 	
       <div id="main">
 	<div id="top"></div>
-	<div id="bottom-left"></div>
-	<div id="bottom-right"></div>
 	<canvas id="xAxis"></canvas>
 	<canvas id="yAxis"></canvas>
-	<div id="border">
-	  <canvas id="container"></canvas>
-	</div>
+	<canvas id="container"></canvas>
+
       </div>
       <div id="mouseDiv" onmouseover="mouseOverDiv()"></div>
       <div id="mySidenav" class="sidenav">
-	<div class="zoombuttons">
-          <button class="zoom-in">Zoom In</button>
-          <button class="zoom-out">Zoom Out</button>
-          <input value="1" type="range" class="zoom-range">
-          <button class="reset">Reset</button>
-	</div>
+	<audio id="audioplayer" controls></audio>
+	<input class="sidebtn" id="opennew" type="button" value="Open New File">
+	<input class="sidebtn" id="close" type="button" value="Close">
+	<input class="sidebtn" id="screenshot" type="button" value="Screenshot">
       </div>
     </body>
 </html>

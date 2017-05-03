@@ -1,5 +1,4 @@
 #include <string>
-#include <iostream>
 #include "SPGWrapper.h"
 
 namespace ElectronLAC {
@@ -54,7 +53,7 @@ namespace ElectronLAC {
       // getting file path as paramenter
       v8::String::Utf8Value param1(args[0]->ToString());
       std::string path = std::string(*param1);
-      // calls itself... 
+      // calls itself...
       SPGWrapper* obj = new SPGWrapper(path);
       obj->Wrap(args.This());
       args.GetReturnValue().Set(args.This());
@@ -83,13 +82,14 @@ namespace ElectronLAC {
   }
   void SPGWrapper::getData(const FunctionCallbackInfo<Value>& args) {
     SPGWrapper* obj = ObjectWrap::Unwrap<SPGWrapper>(args.Holder());
-    double dataOffset = args[0]->NumberValue();
-    double height = args[1]->NumberValue();
-    double width = args[2]->NumberValue();
-    double minFreq = args[3]->NumberValue();
-    char* localData = (char*)(args[4]->NumberValue());
+    double height = args[0]->NumberValue();
+    double width = args[1]->NumberValue();
+    double minFreq = args[2]->NumberValue();
+    Local<Value> bufferview = args[3]->ToObject();
+    Local<ArrayBufferView> buffer = Local<ArrayBufferView>::Cast(bufferview);
+    char* localData = (char*)buffer->Buffer()->GetContents().Data();
     if (localData != 0) {
-      obj->spg.getData(localData, dataOffset, height, width, minFreq);
+      obj->spg.getData(localData, height, width, minFreq);
     }
   }
 } // namespace ElectronLAC

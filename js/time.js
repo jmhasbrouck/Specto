@@ -18,8 +18,10 @@ class Time {
 	this.date.setSeconds(s);
     }
     setMs(ms) {
-	console.log(ms);
-	this.date.setMilliseconds(ms);
+	this.date.setTime(ms);
+    }
+    setDate(date) {
+	this.date = date;
     }
     getTotalMS() {
 	return this.date.getMinutes() * 60 * 1000 + this.date.getSeconds() * 1000 + this.date.getMilliseconds();

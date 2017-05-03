@@ -3,13 +3,31 @@ const {ipcMain, app, BrowserWindow} = electron
 const path = require('path')
 const url = require('url')
 const dialog = electron.dialog
-var splashScreen;
+const Menu = electron.Menu;
+var splashwin;
 var win;
 var renderwin;
 var filename;
 function createWindow () {
+    const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize
+    
+    win = new BrowserWindow({frame:false, width:width, height:height, show:false})
+    win.loadURL(url.format({
+	pathname: path.join(__dirname, 'index.html'),
+	protocol: 'file:',
+	slashes: true
+    }))
+    //win.webContents.openDevTools();
+    win.on('closed', () => {
+	// Dereference the window object, usually you would store windows in an array if your app supports multi windows, this is the time when you should delete the corresponding element.
+	if (renderwin) {
+	    renderwin.close();
+	}
+	renderwin = null;
+	win = null;
+    })
     const {renderwidth, renderheight} = electron.screen.getPrimaryDisplay().workAreaSize/2
-    renderwin = new BrowserWindow({height: renderheight, width: renderwidth, frame:false, show:false});
+    renderwin = new BrowserWindow({frame:false, show:false});
 
     renderwin.loadURL(url.format({
 	pathname: path.join(__dirname, 'renderer.html'),
@@ -19,66 +37,87 @@ function createWindow () {
     renderwin.on('closed', () => {
 	renderwin = null;
     });
-    const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize
-    win = new BrowserWindow({width: width, height: height, show: true})
-    win.loadURL(url.format({
-	pathname: path.join(__dirname, 'index.html'),
-	protocol: 'file:',
-	slashes: true
-    }))
-    win
-    win.on('closed', () => {
-	// Dereference the window object, usually you would store windows in an array if your app supports multi windows, this is the time when you should delete the corresponding element.
-	if (renderwin) {
-	    renderwin.close();
-	}
-	renderwin = null;
-	win = null;
-    })
 }
 function createSplash() {
+    // set the menu
+    const menuTemplate = [
+        {
+            label: 'Spectrogram Viewer',
+	    submenu: [
+            {
+                label: 'Force Quit',
+                click: () => {
+                    app.quit();
+                }
+            }
+        ]
+        }
+    ];
+    const menu = Menu.buildFromTemplate(menuTemplate);
+    Menu.setApplicationMenu(menu);
+    
     createWindow();
+    if (!splashwin) {
     const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize/2
-    splashwin = new BrowserWindow({width:width, height:height, frame:false})
-    splashwin.loadURL(url.format({
-	pathname: path.join(__dirname, 'splash.html'),
-	protocol: 'file:',
-	slashes: true
-    }))
+	splashwin = new BrowserWindow({width:width, height:height, frame:false, webPreferences: {webgl:true}})
+	splashwin.loadURL(url.format({
+	    pathname: path.join(__dirname, 'splash.html'),
+	    protocol: 'file:',
+	    slashes: true
+	}))
+    }
+    else {
+	splashwin.show();
+    }
+//    splashwin.webContents.openDevTools();
     splashwin.on('closed', () => {
 	splashwin = null
-    })   
+    })
 }
 
 // inter-process communication
-ipcMain.once('messageFromSplash', (event, arg) => {
+ipcMain.on('messageFromSplash', (event, arg) => {
     filename = arg[0];
     renderwin.show();
-    splashwin.close();
+    splashwin.hide();
+    renderwin.webContents.send('filename', filename);
     win.webContents.send('replyFromMain', filename);
     event.returnValue = true;
 });
-ipcMain.once('done with spg calculations', (event, arg) => {
+ipcMain.on('done with spg calculations', (event, arg) => {
     win.show();
-    renderwin.close();
+    if (process.platform == 'darwin') {
+	win.maximize();
+    }
+    win.setFullScreen(true);
+    if (splashwin){
+	splashwin.destroy();
+    }
+    if (renderwin){
+	renderwin.destroy();
+    }
 });
-ipcMain.once('closeall', (event, arg) => {
-    win.close();
-    splashwin.close();
+ipcMain.on('closeall', (event, arg) => {
+    if (win) {
+	win.close();
+    }
+    if (splashwin) {
+	splashwin.destroy();
+    }
     win = null;
     splashwin = null;
     renderwin = null;
+    app.quit();
 });
-ipcMain.once('pointer', (event, arg) => {
-    var arg = arg[0];
-    renderwin.webContents.send('thispointer', arg);
+ipcMain.on('restart app', (event, arg) => {
+    win.destroy();
+    createSplash();
 });
 app.on('ready', createSplash);
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
-  //darwin == MacOS, and on mac it's common for programs to be quit using system tray
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
+  // all windows will be closed at some pointer and I do not want the app to quit
+  
 })
+app.commandLine.appendSwitch('ignore-gpu-blacklist');

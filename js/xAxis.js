@@ -1,8 +1,8 @@
 class xAxis {
-    constructor(fontSize, fontStyle) {
-	this.xOffset = $("#border").offset().left + parseInt($("#border").css('border-left-width')) - $("#xAxis").offset().left;
+    constructor(fontSize, fontStyle, audiolength) {
+	this.xOffset = $("#container").offset().left + parseInt($("#container").css('border-left-width')) - $("#xAxis").offset().left;
 	this.height = xCanvas.height;
-	this.width = window.devicePixelRatio * $("#border")[0].clientWidth;
+	this.width = window.devicePixelRatio * $("#container")[0].clientWidth;
 	this.numMajorTicks = majorXTicks;
 	this.numMinorTicks = minorXTicks;
 	this.minorTickSpacing = this.width / this.numMinorTicks;
@@ -12,13 +12,13 @@ class xAxis {
 	this.ctx = $("#xAxis")[0].getContext("2d");
 	this.fontSize = fontSize;
 	this.font = fontStyle;
-	this.audiolength = 0;
+	this.audiolength = audiolength;
 	this.times = [];
 	for (var i = 0 ; i < this.numMajorTicks; i++ ){
 	    this.times.push(new Time(0,0,0));
 	}
 	this.drawAxis();
-	this.redrawTimes();
+	this.redrawTimes(0,1);
     }
     drawAxis() {
 	this.ctx.beginPath();
@@ -52,11 +52,17 @@ class xAxis {
 			      this.xOffset + i*this.majorTickSpacing - this.ctx.measureText(currentTime).width / 2.0,
 			      this.majorHeight);
 	}
+	this.ctx.fillText("Time", this.width/2.0 + this.xOffset, this.majorHeight*2.0); 
     }
     
-    redrawTimes() {
-	for (var i = 0 ; i < this.numMajorTicks; i++ ){
-	    this.times[i].setMs((this.audiolength*1000) * (i * (1 / (this.numMajorTicks - 1))));
+    redrawTimes(min, max) {
+	var step,time, divisions, count;
+	divisions = this.numMajorTicks - 1;
+	step = (max-min)/divisions;
+	count = 0;
+	for (var i = min ; count <= divisions ; i += step){
+	    time = this.audiolength*1000*i;
+	    this.times[count++].setMs(time);
 	}
 	this.ctx.fillStyle = "#000000";
 	this.ctx.fillRect(0, this.majorHeight, xCanvas.width, xCanvas.height);

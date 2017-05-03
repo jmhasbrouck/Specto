@@ -6,18 +6,22 @@ var vertexShaderSource =
     "attribute vec2 a_coords;\n" +
     "attribute vec2 a_texCoords;\n" +
     "varying vec2 v_texCoords;\n" +
+    "uniform mat3 u_matrix;\n" +
     "void main() {\n" +
+    "   vec2 pos = (u_matrix * vec3(a_coords,1)).xy;\n" +
     "   v_texCoords = a_texCoords;\n" +
-    "   gl_Position = vec4(a_coords, 0.0, 1.0);\n" +
+    "   gl_Position = vec4(pos, 0.0, 1.0);\n" +
     "}\n";
 
 var fragmentShaderSource =
     "precision mediump float;\n" +
     "uniform sampler2D u_texture;\n" +
+    "uniform float u_progress;\n" +
     "varying vec2 v_texCoords;\n" +
     "void main() {\n" +
     "   vec2 pos = v_texCoords;\n" +
-    "   vec4 color = texture2D( u_texture, pos );\n" + 
+    "   vec4 color = texture2D( u_texture, pos );\n" +
+    "color += vec4(-0.5,0.5,-0.5, 0.5)*(smoothstep(u_progress-0.001, u_progress,pos.y) - smoothstep(u_progress, u_progress+0.001, pos.y));\n"+
     "   gl_FragColor = vec4(color.xyz, 1.0);\n" +
     "}\n";
 
@@ -25,25 +29,25 @@ var a_coords_location;
 var a_coords_buffer;
 var a_texCoords_location;
 var a_texCoords_buffer;
+var u_matrix_location;
 var u_texture_location;
-var u_scale_location;
+var u_progress_location;
 var textureObject;    
-var coords = new Float32Array( [ -1,-1, 1,-1, 1,1, -1,-1, -1,1, 1,1] );
+var coords = new Float32Array( [ 0,0, 1,0, 1,1, 0,0, 0,1, 1,1] );
 var texCoords = new Float32Array( [ 0,0, 0,1, 1,1, 0,0, 1,0, 1,1] );
-
+var matrix = new Array(9);
 /**
  *  Draws the content of the canvas.
  */
 function glDraw() {
-
     gl.clearColor(1,1,1,1);
     gl.clear(gl.COLOR_BUFFER_BIT);  // clear the canvas
-   
+    
     gl.bindBuffer(gl.ARRAY_BUFFER, a_coords_buffer);
     gl.bufferData(gl.ARRAY_BUFFER, coords, gl.STATIC_DRAW);
     gl.vertexAttribPointer(a_coords_location, 2, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(a_coords_location); 
-
+    
     gl.bindBuffer(gl.ARRAY_BUFFER, a_texCoords_buffer);
     gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STREAM_DRAW);
     gl.vertexAttribPointer(a_texCoords_location, 2, gl.FLOAT, false, 0, 0);
@@ -51,11 +55,14 @@ function glDraw() {
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, textureObject);
     gl.uniform1i( u_texture_location, 0 );
-    //gl.uniform1f( u_scale_location, scale);
+    
+    multiply(m3.translation(-1*translate[0], -1*translate[1]), m3.scaling(scale,scale), matrix);
+    gl.uniformMatrix3fv(u_matrix_location, false, matrix);
+    gl.uniform1f(u_progress_location, audioProgress);
     /* Draw the triangle. */
     
     gl.drawArrays(gl.TRIANGLES, 0, 6);
-
+    
 }
 
 /**
@@ -90,10 +97,8 @@ function createProgram(gl, vertexShaderSource, fragmentShaderSource) {
 
 function loadTexture() {
     // loading the data into the texture object.
-    var width;
-    gl.bindTexture(gl.TEXTURE_2D, textureObject);
-    width = glWidth;//glWidth > data.length / 3 / numberOfBins ? data.length / 3 / numberOfBins : glWidth;
-    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB, glHeight , width, 0,gl.RGB,gl.UNSIGNED_BYTE, data);
+
+    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB, glHeight , glWidth, 0,gl.RGB,gl.UNSIGNED_BYTE, data);
     
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -106,7 +111,7 @@ function loadTexture() {
  * Initialize the WebGL graphics context
  */
 function initGL() {
-    gl.viewport(0,0,glWidth, glHeight);
+    gl.viewport(0,0,canvas.clientWidth, canvas.clientHeight);
     var prog = createProgram( gl, vertexShaderSource, fragmentShaderSource );
     gl.useProgram(prog);
     /* Get the locations for the attribute and uniform variables in the shader, and create VBOs to hold the attribute values. */
@@ -116,10 +121,13 @@ function initGL() {
     a_coords_buffer = gl.createBuffer();
     a_texCoords_location = gl.getAttribLocation(prog, "a_texCoords");
     a_texCoords_buffer = gl.createBuffer();
-    console.log("a texcoords " + a_texCoords_location);
+   
     u_texture_location = gl.getUniformLocation(prog, "u_texture");
-    //u_scale_location = gl.getUniformLocation(prog, "u_scale");
+    u_matrix_location = gl.getUniformLocation(prog, "u_matrix");
+    u_progress_location = gl.getUniformLocation(prog, "u_progress");
     textureObject = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, textureObject);
+    loadTexture();
 }
 
 /**
@@ -130,8 +138,10 @@ function glInit() {
 	var options = {  // no need for alpha channel or depth buffer in this program
 	    alpha: false, depth: false
 	};
+	
 	gl = canvas.getContext("webgl", options) || 
-	    canvas.getContext("experimental-webgl", options);
+	    canvas.getContext("experimental-webgl", options) ||
+	    canvas.getContext("webgl2", options);
 	if ( ! gl ) {
 	    throw "Browser does not support WebGL";
 	}

@@ -1,6 +1,6 @@
 class yAxis {
-    constructor(fontSize, fontStyle) {
-	this.yOffset = xaxis.height + parseInt($("#border").css('border-left-width'));
+    constructor(fontSize, fontStyle, minfreq, maxfreq) {
+	this.yOffset = xaxis.height + parseInt($("#container").css('border-left-width'));
 	this.height = yCanvas.height - this.yOffset * 2.0;
 	this.width = yCanvas.width;
 	this.numMajorTicks = majorYTicks;
@@ -12,8 +12,8 @@ class yAxis {
 	this.ctx = $("#yAxis")[0].getContext("2d");
 	this.fontSize = fontSize;
 	this.font = fontStyle;
-	this.minFrequency = 0;
-	this.maxFrequency = 8000;
+	this.minFrequency = minfreq;
+	this.maxFrequency = maxfreq;
 	this.drawAxis();
 	this.drawFrequencies();
     }
@@ -40,20 +40,32 @@ class yAxis {
     drawFrequencies() {
 	this.ctx.font = this.fontSize.toString() + " " + this.font;
 	this.ctx.fillStyle = "#FFFFFF";
+	this.ctx.textAlign = 'center';
 	this.ctx.textBaseline = "middle";
-	var currentFrequency;
+	var currentFrequency, step, currentIncrement, middlePosX, middlePosY, numberWidth;
+	step = (this.maxFrequency - this.minFrequency) / (this.numMajorTicks - 1);
+	numberWidth = this.ctx.measureText("44150.0").width;
 	for (var i = 0; i < this.numMajorTicks; i++) {
-	    currentFrequency = (this.minFrequency + ((this.numMajorTicks - 1) - i) * (this.maxFrequency / (this.numMajorTicks - 1))).toFixed(1);
-				this.ctx.fillText(currentFrequency.toString(),
-			      (this.width - this.ctx.measureText(currentFrequency).width) / 2,
-			      this.yOffset + i*this.majorTickSpacing);
+	    currentIncrement = ((this.numMajorTicks - 1) - i);
+	    currentFrequency = (this.minFrequency +  currentIncrement*step).toFixed(1);
+	    middlePosX = this.width - (this.width-this.majorWidth) - numberWidth/2;
+	    middlePosY = this.yOffset + i*this.majorTickSpacing;
+	    this.ctx.fillText(currentFrequency.toString(), middlePosX, middlePosY);
 	}
+	this.ctx.save();
+	this.ctx.textBaseline = 'top';
+	this.ctx.translate(0, this.height/2 + this.yOffset);
+	this.ctx.rotate(-Math.PI/2);
+	this.ctx.fillText("Frequency (hz)", 0, 0);
+	this.ctx.restore();
 	this.ctx.stroke();
     }
-    redrawFrequencies() {
+    redrawFrequencies(min, max) {
+	this.minFrequency=spg.getFrequencyResolution() * glHeight * min;
+	this.maxFrequency=spg.getFrequencyResolution() * glHeight * max;
 	this.ctx.fillStyle = "#000000";
-	this.ctx.fillRect(0, this.majorHeight, xCanvas.width, xCanvas.height);
-	drawFrequencies();
+	this.ctx.fillRect(0, 0, this.width, this.height + this.yOffset*2.0);
+	this.drawFrequencies();
     }
     setHeight(h) {
 	this.height = h;

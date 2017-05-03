@@ -1,7 +1,7 @@
-var mouseIsDown = false;
-var lastX, lastY;
+const panzoom = require('pan-zoom');
+const screenshot = require('electron-screenshot')
 function openNav() {
-    document.getElementById("mySidenav").style.width = "250px";
+    document.getElementById("mySidenav").style.width = "40vw";
 }
 
 function closeNav() {
@@ -12,34 +12,48 @@ function mouseOverDiv() {
     openNav();
 }
 
-function addZoom() {
+
+function addEventHandlers() {
     $("#mySidenav").mouseleave(
 	function() { closeNav()}
     );
-    var $buttons = $('.zoombuttons');
-    $(".zoom-out").on("click", function (e){
-	$("#container").panzoom("pan", 0, 0);
+    $("#close").on('click', function () {
+	ipcRenderer.send('closeall');
     });
-    $("#container").panzoom({
-        $zoomIn: $buttons.find(".zoom-in"),
-        $zoomOut: $buttons.find(".zoom-out"),
-        $zoomRange: $buttons.find(".zoom-range"),
-        $reset: $buttons.find(".reset"),
-        panOnlyWhenZoomed: true,
-	increment: 0.2,
-        minScale: 1,
-	maxScale: 7,
-	 // Animation duration (ms)
-	duration: 0,
-	contain: 'automatic',
-	onChange: function (e, panzoom, transform) {
-	    //scale = transform[0];
-	    console.log(transform);
-	    gl.canvas.width = canvas.clientWidth * transform[0];
-	    gl.canvas.height = canvas.clientHeight * transform[0];
-	    hasChanged = true;
-	}
+    $("#opennew").on('click', function () {
+	ipcRenderer.send('restart app');
     });
+    $("#screenshot").on('click', function() {
+	$("#mySidenav").hide(0);
+	dialog.showSaveDialog({
+		 filters: [
+		     {name: 'PNG file', extensions: ['png']},
+		 ], title:filename
+	}, function(name) {
+	    if (name && name != undefined) {
+		screenshot({filename:name});
+	    }
+	});
+	$("#mySidenav").show(0);
+    });
+   panzoom(canvas, e => {
+        //e contains all the params related to the interaction 
+	
+        //pan deltas 
+        translate[0] -=e.dx/400/scale;
+        translate[1] +=e.dy/400/scale;
+	
+        //zoom delta 
+        scale -= e.dz/400;
+    });  
+}
+function boundScaleAndTranslate() {
+    scale = Math.max(2, scale);
+    scale = Math.min(40, scale);
+    translate[0] = Math.max(translate[0], (1/scale));
+    translate[0] = Math.min(translate[0], 1-(1/scale));
+    translate[1] = Math.max(translate[1], (1/scale));
+    translate[1] = Math.min(translate[1], 1-(1/scale));
 }
  
 

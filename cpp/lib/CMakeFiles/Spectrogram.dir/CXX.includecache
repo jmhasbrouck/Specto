@@ -1,4 +1,4 @@
-#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
 
 #IncludeRegexScan: ^.*$
 
@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/james/Documents/CingSnd/cpp/lib/src/SndFile.h
+/Users/jameshasbrouck/CingSnd/cpp/lib/src/SndFile.h
 stdio.h
 -
 stdlib.h
@@ -20,29 +20,27 @@ math.h
 fftw3.h
 -
 sndfile.h
-/home/james/Documents/CingSnd/cpp/lib/src/sndfile.h
+/Users/jameshasbrouck/CingSnd/cpp/lib/src/sndfile.h
 window.h
-/home/james/Documents/CingSnd/cpp/lib/src/window.h
+/Users/jameshasbrouck/CingSnd/cpp/lib/src/window.h
 common.h
-/home/james/Documents/CingSnd/cpp/lib/src/common.h
+/Users/jameshasbrouck/CingSnd/cpp/lib/src/common.h
 
-/home/james/Documents/CingSnd/cpp/lib/src/Spectrogram.cpp
+/Users/jameshasbrouck/CingSnd/cpp/lib/src/Spectrogram.cpp
 Spectrogram.h
-/home/james/Documents/CingSnd/cpp/lib/src/Spectrogram.h
+/Users/jameshasbrouck/CingSnd/cpp/lib/src/Spectrogram.h
 
-/home/james/Documents/CingSnd/cpp/lib/src/Spectrogram.h
+/Users/jameshasbrouck/CingSnd/cpp/lib/src/Spectrogram.h
 string
--
-iostream
 -
 sndfile.h
 -
 SndFile.h
-/home/james/Documents/CingSnd/cpp/lib/src/SndFile.h
+/Users/jameshasbrouck/CingSnd/cpp/lib/src/SndFile.h
 
-/home/james/Documents/CingSnd/cpp/lib/src/common.h
+/Users/jameshasbrouck/CingSnd/cpp/lib/src/common.h
 sndfile.h
 -
 
-/home/james/Documents/CingSnd/cpp/lib/src/window.h
+/Users/jameshasbrouck/CingSnd/cpp/lib/src/window.h
 
