@@ -1,9 +1,0 @@
-var ctx;
-
-function drawLegend(mindb, maxdb) {
-    ctx = $("#mouseDiv")[0].getContext('2d');
-    var legendHeight = 0.2*$("#mouseDiv")[0].clientHeight;
-    var height = $("#mouseDiv")[0].clientHeight;
-    var width = $("#mouseDiv")[0].clientWidth;
-    ctx.moveTo(width/2, height/2 - legendHeight/2);
-}

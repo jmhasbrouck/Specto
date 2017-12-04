@@ -21,6 +21,7 @@ function animate() {
     requestAnimationFrame( animate );    
 }
 function init() {
+    console.log("here!");
     canvas = $("#container")[0];
     xCanvas = $("#xAxis")[0];
     yCanvas = $("#yAxis")[0];

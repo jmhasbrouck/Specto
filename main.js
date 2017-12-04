@@ -11,7 +11,7 @@ var filename;
 function createWindow () {
     const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize
     
-    win = new BrowserWindow({frame:true, width:width, height:height, show:false})
+    win = new BrowserWindow({frame:true, width:width, height:height, show:true})
     win.loadURL(url.format({
 	pathname: path.join(__dirname, 'index.html'),
 	protocol: 'file:',
@@ -94,6 +94,7 @@ ipcMain.on('done with spg calculations', (event, arg) => {
     if (renderwin){
 	renderwin.destroy();
     }
+    console.log("done with spg");
     win.show();
 });
 ipcMain.on('closeall', (event, arg) => {
@@ -116,7 +117,6 @@ app.on('ready', createSplash);
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
-  // all windows will be closed at some pointer and I do not want the app to quit
   
 })
 app.commandLine.appendSwitch('ignore-gpu-blacklist');

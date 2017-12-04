@@ -1,1 +1,0 @@
-cmd_Release/SPG.node := c++ -bundle -Wl,-search_paths_first -Wl,-rpath,/Users/jameshasbrouck/CingSnd/cpp/lib/ -L/Users/jameshasbrouck/CingSnd/cpp/lib -undefined dynamic_lookup -Wl,-no_pie -Wl,-search_paths_first -mmacosx-version-min=10.7 -arch x86_64 -L./Release  -o Release/SPG.node Release/obj.target/SPG/SPGSource.o Release/obj.target/SPG/SPGWrapper.o -lSpectrogram

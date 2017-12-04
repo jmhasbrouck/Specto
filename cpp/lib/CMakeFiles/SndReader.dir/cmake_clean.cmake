@@ -3,7 +3,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/SndReader.dir/src/window.c.o"
   "CMakeFiles/SndReader.dir/src/common.c.o"
   "libSndReader.pdb"
-  "libSndReader.a"
+  "libSndReader.dylib"
 )
 
 # Per-language clean rules from dependency scanning.
