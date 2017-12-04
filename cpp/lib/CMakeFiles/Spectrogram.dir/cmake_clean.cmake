@@ -1,7 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/Spectrogram.dir/src/Spectrogram.cpp.o"
   "libSpectrogram.pdb"
-  "libSpectrogram.dylib"
+  "libSpectrogram.a"
 )
 
 # Per-language clean rules from dependency scanning.

@@ -48,7 +48,6 @@ namespace ElectronLAC {
   }
   void SPGWrapper::New(const FunctionCallbackInfo<Value>& args) {
     Isolate* isolate = args.GetIsolate();
-
     if (args.IsConstructCall()) {
       // getting file path as paramenter
       v8::String::Utf8Value param1(args[0]->ToString());

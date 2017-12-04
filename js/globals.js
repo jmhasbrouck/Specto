@@ -24,6 +24,8 @@ var dataOffset;
 var maxFrequency;
 var currentHighFrequency;
 var currentLowFrequency;
+var audiolength;
+var freqres;
 var glWidth;
 var glHeight;
 var numberOfBins;
@@ -32,14 +34,16 @@ var dataChanged = true;
 var scale = 2;
 var translate = [0.5, 0.5];
 var audioProgress = 0;
-
+var mousepos = [0, 0];
+var mousetime;
+var mousefrequency;
 function setGlobals() {
     lowestDB = 0;
     highestDB = 120;
     maxFrequency = 8000;
     dataOffset = 0;
     glWidth = 8192;
-    numberOfBins = 2048;
+    numberOfBins = 4096;
     glHeight = numberOfBins;
     currentHighFrequency = maxFrequency;
     currentLowFrequency = 0;
@@ -49,6 +53,11 @@ function setGlobals() {
     xCanvas.width = window.devicePixelRatio * xCanvas.clientWidth;
     yCanvas.height = window.devicePixelRatio * yCanvas.clientHeight;
     yCanvas.width = window.devicePixelRatio * yCanvas.clientWidth;
+    $("#mouseDiv")[0].height = window.devicePixelRatio * $("#mouseDiv")[0].clientHeight;
+    $("#mouseDiv")[0].width = window.devicePixelRatio * $("#mouseDiv")[0].clientWidth;
+    mousetime = new Time(0,0,0);
+    mousefrequency = 0;
+    audiolength=0;
     data = new Uint8Array(glWidth * glHeight * 3);
 }
 
@@ -58,6 +67,6 @@ window.requestAnimationFrame = window.requestAnimationFrame || ( function() {
 	window.oRequestAnimationFrame ||
 	window.msRequestAnimationFrame ||
 	function(  callback, element ) {
-	    window.setTimeout( callback, 1000 / 15 );
+	    window.setTimeout( callback, 1000 / 30 );
 	};
 })();

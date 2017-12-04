@@ -17,6 +17,7 @@
 	<script src="./js/time.js"></script>
 	<script src="./js/xAxis.js"></script>
 	<script src="./js/yAxis.js"></script>
+	<script src="./js/legend.js"></script>
 	<script src="./js/main.js"></script> 
 	<script src="./js/gl.js"></script>
     </head>
@@ -28,9 +29,12 @@
 	<canvas id="xAxis"></canvas>
 	<canvas id="yAxis"></canvas>
 	<canvas id="container"></canvas>
-
+	<div id="filenameheader"></div>
       </div>
-      <div id="mouseDiv" onmouseover="mouseOverDiv()"></div>
+      <canvas id="mouseDiv" onmouseover="mouseOverDiv()"></canvas>
+	<div id="frequencydisplay">
+	
+      </div>
       <div id="mySidenav" class="sidenav">
 	<audio id="audioplayer" controls></audio>
 	<input class="sidebtn" id="opennew" type="button" value="Open New File">

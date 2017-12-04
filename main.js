@@ -11,7 +11,7 @@ var filename;
 function createWindow () {
     const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize
     
-    win = new BrowserWindow({frame:false, width:width, height:height, show:false})
+    win = new BrowserWindow({frame:true, width:width, height:height, show:false})
     win.loadURL(url.format({
 	pathname: path.join(__dirname, 'index.html'),
 	protocol: 'file:',
@@ -42,19 +42,17 @@ function createSplash() {
     // set the menu
     const menuTemplate = [
         {
-            label: 'Spectrogram Viewer',
 	    submenu: [
-            {
-                label: 'Force Quit',
-                click: () => {
-                    app.quit();
-                }
-            }
-        ]
+		{
+		    
+                    label: 'Force Quit',
+                    role: "quit"
+		}
+            ]
         }
     ];
     const menu = Menu.buildFromTemplate(menuTemplate);
-    Menu.setApplicationMenu(menu);
+    //Menu.setApplicationMenu(menu);
     
     createWindow();
     if (!splashwin) {
@@ -85,17 +83,18 @@ ipcMain.on('messageFromSplash', (event, arg) => {
     event.returnValue = true;
 });
 ipcMain.on('done with spg calculations', (event, arg) => {
-    win.show();
     if (process.platform == 'darwin') {
-	win.maximize();
+	//win.maximize();
     }
-    win.setFullScreen(true);
+    //    win.setFullScreen(true);
+    
     if (splashwin){
 	splashwin.destroy();
     }
     if (renderwin){
 	renderwin.destroy();
     }
+    win.show();
 });
 ipcMain.on('closeall', (event, arg) => {
     if (win) {

@@ -1,0 +1,6 @@
+#! bin/sh
+cd ./lib
+cmake .
+make
+cd ..
+node-gyp rebuild --target=1.4.15 --arch=x64 --dist-url=https://atom.io/download/electron

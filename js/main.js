@@ -15,6 +15,8 @@ function animate() {
     xaxis.redrawTimes(translate[0] - (1/scale), translate[0]+(1/scale));
     yaxis.redrawFrequencies(translate[1] - (1/scale), translate[1] + (1/scale));
     audioProgress = audio.getProgress() / audio.getDuration();
+    
+    $("#frequencydisplay")[0].innerHTML = mousefrequency.toString() + "hz | " + mousetime.getTime("mm:ss.ms");
     glDraw();
     requestAnimationFrame( animate );    
 }
@@ -24,16 +26,29 @@ function init() {
     yCanvas = $("#yAxis")[0];
     setGlobals();
     addEventHandlers();
+    drawLegend(-120, 0,
+	       window.getComputedStyle(document.body).fontSize,
+	       window.getComputedStyle(document.body).fontStyle);
     ipcRenderer.once('replyFromMain', (event, arg) => {
 	filename = arg;
 	document.title = filename;
 	audio.playFile(arg);
-	spg = new SPG.MyObject(arg); 
-	spg.getData(glHeight, glWidth, -120, data);
+	$("#filenameheader")[0].innerHTML = filename.split('/').slice(-1)[0];
+	
+	if (arg.slice(-3) == "wav") {
+	    spg = new SPG.MyObject(arg); 
+	    spg.getData(glHeight, glWidth, -120, data);
+	    audiolength = spg.getAudioLength();
+	    freqres = spg.getFrequencyResolution();
+	}
+	else {
+	    // todo: add more file types
+	}
+
 	xaxis = new xAxis(window.getComputedStyle(document.body).fontSize,
-			  window.getComputedStyle(document.body).fontStyle, spg.getAudioLength());
+			  window.getComputedStyle(document.body).fontStyle, audiolength);
 	yaxis = new yAxis(window.getComputedStyle(document.body).fontSize,
-			  window.getComputedStyle(document.body).fontStyle, 0, spg.getFrequencyResolution()*glHeight);
+			  window.getComputedStyle(document.body).fontStyle, 0, freqres*glHeight);
 	glInit();
 	ipcRenderer.send('done with spg calculations', null);
 	animate();

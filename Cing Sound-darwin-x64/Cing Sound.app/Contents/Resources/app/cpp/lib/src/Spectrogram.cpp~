@@ -1,0 +1,41 @@
+#include <sndfile.h>
+#include "Spectrogram.h"
+#include "SndFile.h"
+
+extern "C" {
+  extern SF_INFO getSpecData(char* data, const char* fileName,int dataOffset, int height, int width, double minDb);
+}
+#include <iostream>
+namespace Spectrogram {
+  
+  Spectrogram::Spectrogram(std::string file)
+  { 
+    fileName = file;
+  }
+  void Spectrogram::getData(char* data,
+				   size_t dataOffset,
+				   size_t height,
+				   size_t width,
+			    double minDb) {
+
+    info = getSpecData(data, fileName.c_str(), dataOffset, height, width, minDb);
+    height = (double)height;
+    width = (double)width;
+    
+    int speclen =  height * (info.samplerate / 20 / height + 1);
+    speclen += 0x40 - (speclen & 0x3f) ;
+    freqres = (double)speclen;
+}
+  // returns audio length in seconds
+  double Spectrogram::getAudioLength() {
+    return (double)info.frames/(double)info.samplerate;
+  }
+  double Spectrogram::getTimeResolution() {
+    return getAudioLength()/width;
+  }
+  double Spectrogram::getFrequencyResolution() {
+    // freqRes is set in render_to_surface in SndFile.c
+    
+    return freqres;
+  }
+}

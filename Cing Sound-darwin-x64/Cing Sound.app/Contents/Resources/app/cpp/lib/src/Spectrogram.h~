@@ -1,0 +1,32 @@
+
+#include <string>
+#include <sndfile.h>
+#include "SndFile.h"
+namespace Spectrogram {
+  class Spectrogram {
+  public:
+    Spectrogram(std::string file);
+    void getData(  char* data,
+		   size_t dataOffset,
+		   size_t height,
+		   size_t width,
+		   double minDb);
+    ~Spectrogram() {
+      if (dataLoc) {
+	delete [] dataLoc;
+      }
+    }
+    // returns audio length in seconds
+    double getAudioLength();
+    double getTimeResolution();
+    double getFrequencyResolution();
+  private:
+    bool recalculate;
+    SF_INFO info;
+    double height;
+    double width;
+    double freqres;
+    char* dataLoc;
+    std::string fileName;
+  };
+}
