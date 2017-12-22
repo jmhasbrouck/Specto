@@ -1,27 +1,19 @@
+var fs = require('fs');
 var noop = function(){};
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
 var ctx = new AudioContext();
 var analyser = ctx.createAnalyser();
+var pcmbuffer;
 var audioElement;
 var sourceNode;
-analyser.connect(ctx.destination);
-
+var ctx
 const fftSize = analyser.fftSize;
 const frequencyBinCount = analyser.frequencyBinCount;
 
 var audio = {};
 
-audio.stop = function() {
-    /*if (sourceNode) {
-        sourceNode.disconnect();
-        sourceNode = null;
-        audio.releasePlayingListeners();
-        audioElement.pause();
-        audioElement = null;
-        audio.onEnded();
-    }*/
-};
+audio.stop = function(){ };
 
 audio.playPause = function() {
     if (audioElement) {
@@ -33,7 +25,7 @@ audio.playPause = function() {
     }
 };
 
-audio.playFile = function(file) {
+audio.loadFile = function(file) {
     audio.stop();
     return new Promise(function(resolve, reject) {
         if (!audioElement) {
@@ -41,7 +33,12 @@ audio.playFile = function(file) {
             audioElement.src = file;
             sourceNode = ctx.createMediaElementSource(audioElement);
             sourceNode.connect(analyser);
-
+            fs.readFile(file, (err, data) => {
+                var visualCtx = new AudioContext();
+                visualCtx.decodeAudioData(data.buffer).then(function(decodedData) {
+                    console.log(decodedData);
+                });
+            })
             const once = function (target, event, callback) {
                 const wrappedCallback = function () {
                     target.removeEventListener(event, wrappedCallback);
@@ -100,5 +97,5 @@ audio.onEnded = noop;
 
 audio.fftSize = fftSize;
 audio.frequencyBinCount = frequencyBinCount;
-
+audio.analyser = analyser;
 module.exports = audio;

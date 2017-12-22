@@ -1,11 +1,9 @@
 // libraries
-const SPG = require('./cpp/build/Release/SPG');
 const electron = require('electron');
 var webframe = electron.webFrame;
 const {ipcRenderer} = electron;
 const {remote} = electron;
 const dialog = remote.dialog;
-
 // disable zooming
 webframe.setVisualZoomLevelLimits(1, 1)
 webframe.setLayoutZoomLevelLimits(0, 0)
@@ -33,19 +31,8 @@ function init() {
     ipcRenderer.once('replyFromMain', (event, arg) => {
 	filename = arg;
 	document.title = filename;
-	audio.playFile(arg);
-	$("#filenameheader")[0].innerHTML = filename.split('/').slice(-1)[0];
-	
-	if (arg.slice(-3) == "wav") {
-	    spg = new SPG.MyObject(arg); 
-	    spg.getData(glHeight, glWidth, -120, data);
-	    audiolength = spg.getAudioLength();
-	    freqres = spg.getFrequencyResolution();
-	}
-	else {
-	    // todo: add more file types
-	}
-
+	audio.loadFile(arg);
+    console.log(arg);
 	xaxis = new xAxis(window.getComputedStyle(document.body).fontSize,
 			  window.getComputedStyle(document.body).fontStyle, audiolength);
 	yaxis = new yAxis(window.getComputedStyle(document.body).fontSize,
