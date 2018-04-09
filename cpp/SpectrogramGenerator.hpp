@@ -1,5 +1,5 @@
 
-/*
+/******************************************* ORIGINAL COPYRIGHT **********************************************
 ** Copyright (C) 2007-2009 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software: you can redistribute it and/or modify
@@ -14,8 +14,9 @@
 **
 ** You should have received a copy of the GNU General Public License
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-// code liberally taken from mega-nerd.com
+*************************************************************************************************************/
+
+// code liberally taken from mega-nerd.com (thank you Erik de Castro Lopo!)
 // original code generated a png
 // the original code was modified to fill a buffer of bytes
 
@@ -28,38 +29,27 @@
 #include <math.h>
 #include <fftw3.h>
 
-#include "sndfile.h"
-
 #include "window.h"
-#include "common.h"
 
-#define	MIN_WIDTH	640
-#define	MIN_HEIGHT	480
-#define	MAX_WIDTH	8192
-#define	MAX_HEIGHT	4096
-
-#define TICK_LEN			6
-#define	BORDER_LINE_WIDTH	1.8
-
-#define	TITLE_FONT_SIZE		20.0
-#define	NORMAL_FONT_SIZE	12.0
-
-#define	LEFT_BORDER			65.0
-#define	TOP_BORDER			30.0
-#define	RIGHT_BORDER		75.0
-#define	BOTTOM_BORDER		40.0
-
-#define	SPEC_FLOOR_DB		-180.0
+#define MIN_WIDTH 640
+#define MIN_HEIGHT 480
+#define MAX_WIDTH 8192
+#define MAX_HEIGHT 4096
+namespace SpectrogramGenerator
+{
 typedef struct
-{	const char *sndfilepath, *pngfilepath, *filename ;
-	int width, height ;
-	bool border, log_freq ;
-	double spec_floor_db ;
-} RENDER ;
+{
+	int width, height, dataOffset;
+	bool log_freq;
+	double spec_floor_db;
+	int sample_rate;
+	double *pcm_data;
+} RENDER;
 
-typedef struct
-{	int left, top, width, height ;
-} RECT ;
+#define ARRAY_LEN(x) ((int)(sizeof(x) / sizeof(x[0])))
+#define MAX(x, y) ((x) > (y) ? (x) : (y))
+#define MIN(x, y) ((x) < (y) ? (x) : (y))
 
-extern SF_INFO getSpecData(char* data, const char* fileName,int height, int width, double minDb);
+void getSpecData(const char *image_data, const double *pcm_data, int height, int width, double minDb, int samplerate);
+}
 #endif

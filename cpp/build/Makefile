@@ -326,8 +326,8 @@ ifeq ($(strip $(foreach prefix,$(NO_LOAD),\
 endif
 
 quiet_cmd_regen_makefile = ACTION Regenerating $@
-cmd_regen_makefile = cd $(srcdir); /Users/jameshasbrouck/.npm-global/lib/node_modules/node-gyp/gyp/gyp_main.py -fmake --ignore-environment "--toplevel-dir=." -I/Users/jameshasbrouck/CingSnd/cpp/build/config.gypi -I/Users/jameshasbrouck/.npm-global/lib/node_modules/node-gyp/addon.gypi -I/Users/jameshasbrouck/.node-gyp/iojs-1.4.15/common.gypi "--depth=." "-Goutput_dir=." "--generator-output=build" "-Dlibrary=shared_library" "-Dvisibility=default" "-Dnode_root_dir=/Users/jameshasbrouck/.node-gyp/iojs-1.4.15" "-Dnode_gyp_dir=/Users/jameshasbrouck/.npm-global/lib/node_modules/node-gyp" "-Dnode_lib_file=iojs.lib" "-Dmodule_root_dir=/Users/jameshasbrouck/CingSnd/cpp" "-Dnode_engine=v8" binding.gyp
-Makefile: $(srcdir)/../../.node-gyp/iojs-1.4.15/common.gypi $(srcdir)/../../.npm-global/lib/node_modules/node-gyp/addon.gypi $(srcdir)/build/config.gypi $(srcdir)/binding.gyp
+cmd_regen_makefile = cd $(srcdir); /usr/local/lib/node_modules/node-gyp/gyp/gyp_main.py -fmake --ignore-environment "--toplevel-dir=." -I/Users/jhasbrouck/Documents/Specto/cpp/build/config.gypi -I/usr/local/lib/node_modules/node-gyp/addon.gypi -I/Users/jhasbrouck/.node-gyp/iojs-1.4.15/common.gypi "--depth=." "-Goutput_dir=." "--generator-output=build" "-Dlibrary=shared_library" "-Dvisibility=default" "-Dnode_root_dir=/Users/jhasbrouck/.node-gyp/iojs-1.4.15" "-Dnode_gyp_dir=/usr/local/lib/node_modules/node-gyp" "-Dnode_lib_file=/Users/jhasbrouck/.node-gyp/iojs-1.4.15/<(target_arch)/iojs.lib" "-Dmodule_root_dir=/Users/jhasbrouck/Documents/Specto/cpp" "-Dnode_engine=v8" binding.gyp
+Makefile: $(srcdir)/../../../.node-gyp/iojs-1.4.15/common.gypi $(srcdir)/build/config.gypi $(srcdir)/binding.gyp $(srcdir)/../../../../../usr/local/lib/node_modules/node-gyp/addon.gypi
 	$(call do_cmd,regen_makefile)
 
 # "all" is a concatenation of the "all" targets from all the included

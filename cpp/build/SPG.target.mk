@@ -44,10 +44,10 @@ CFLAGS_OBJC_Debug :=
 CFLAGS_OBJCC_Debug :=
 
 INCS_Debug := \
-	-I/Users/jameshasbrouck/.node-gyp/iojs-1.4.15/include/node \
-	-I/Users/jameshasbrouck/.node-gyp/iojs-1.4.15/src \
-	-I/Users/jameshasbrouck/.node-gyp/iojs-1.4.15/deps/uv/include \
-	-I/Users/jameshasbrouck/.node-gyp/iojs-1.4.15/deps/v8/include
+	-I/Users/jhasbrouck/.node-gyp/iojs-1.4.15/include/node \
+	-I/Users/jhasbrouck/.node-gyp/iojs-1.4.15/src \
+	-I/Users/jhasbrouck/.node-gyp/iojs-1.4.15/deps/uv/include \
+	-I/Users/jhasbrouck/.node-gyp/iojs-1.4.15/deps/v8/include
 
 DEFS_Release := \
 	'-DNODE_GYP_MODULE_NAME=SPG' \
@@ -89,14 +89,14 @@ CFLAGS_OBJC_Release :=
 CFLAGS_OBJCC_Release :=
 
 INCS_Release := \
-	-I/Users/jameshasbrouck/.node-gyp/iojs-1.4.15/include/node \
-	-I/Users/jameshasbrouck/.node-gyp/iojs-1.4.15/src \
-	-I/Users/jameshasbrouck/.node-gyp/iojs-1.4.15/deps/uv/include \
-	-I/Users/jameshasbrouck/.node-gyp/iojs-1.4.15/deps/v8/include
+	-I/Users/jhasbrouck/.node-gyp/iojs-1.4.15/include/node \
+	-I/Users/jhasbrouck/.node-gyp/iojs-1.4.15/src \
+	-I/Users/jhasbrouck/.node-gyp/iojs-1.4.15/deps/uv/include \
+	-I/Users/jhasbrouck/.node-gyp/iojs-1.4.15/deps/v8/include
 
 OBJS := \
-	$(obj).target/$(TARGET)/SPGSource.o \
-	$(obj).target/$(TARGET)/SPGWrapper.o
+	$(obj).target/$(TARGET)/Main.o \
+	$(obj).target/$(TARGET)/SpectrogramGenerator.o
 
 # Add to the list of files we specially track dependencies for.
 all_deps += $(OBJS)
@@ -111,15 +111,15 @@ $(OBJS): GYP_OBJCXXFLAGS := $(DEFS_$(BUILDTYPE)) $(INCS_$(BUILDTYPE))  $(CFLAGS_
 
 # Suffix rules, putting all outputs into $(obj).
 
-$(obj).$(TOOLSET)/$(TARGET)/%.o: $(srcdir)/%.cc FORCE_DO_CMD
+$(obj).$(TOOLSET)/$(TARGET)/%.o: $(srcdir)/%.cpp FORCE_DO_CMD
 	@$(call do_cmd,cxx,1)
 
 # Try building from generated source, too.
 
-$(obj).$(TOOLSET)/$(TARGET)/%.o: $(obj).$(TOOLSET)/%.cc FORCE_DO_CMD
+$(obj).$(TOOLSET)/$(TARGET)/%.o: $(obj).$(TOOLSET)/%.cpp FORCE_DO_CMD
 	@$(call do_cmd,cxx,1)
 
-$(obj).$(TOOLSET)/$(TARGET)/%.o: $(obj)/%.cc FORCE_DO_CMD
+$(obj).$(TOOLSET)/$(TARGET)/%.o: $(obj)/%.cpp FORCE_DO_CMD
 	@$(call do_cmd,cxx,1)
 
 # End of this set of suffix rules
@@ -151,8 +151,7 @@ LIBTOOLFLAGS_Release := \
 	-Wl,-search_paths_first
 
 LIBS := \
-	-lSpectrogram \
-	-I/Users/jameshasbrouck/CingSnd/cpp/lib/.
+	-lfftw3
 
 $(builddir)/SPG.node: GYP_LDFLAGS := $(LDFLAGS_$(BUILDTYPE))
 $(builddir)/SPG.node: LIBS := $(LIBS)

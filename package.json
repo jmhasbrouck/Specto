@@ -9,6 +9,7 @@
   "dependencies": {
     "electron": "^1.4.15",
     "electron-screenshot": "^1.0.4",
+    "node-gyp": "^3.6.2",
     "panzoom": "^2.5.0"
   }
 }
