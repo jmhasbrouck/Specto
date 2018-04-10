@@ -1,15 +1,30 @@
 {
-  "name": "CingSound",
+  "name": "cingsound",
   "productName": "Cing Sound",
   "version": "1.0.0",
   "main": "main.js",
   "devDependencies": {
+    "electron": "^1.8.4",
+    "jquery": "^3.3.1",
     "pan-zoom": "^2.0.0"
   },
   "dependencies": {
-    "electron": "^1.4.15",
     "electron-screenshot": "^1.0.4",
     "node-gyp": "^3.6.2",
     "panzoom": "^2.5.0"
-  }
+  },
+  "description": "spectrogram viewer for WAV files written with Electron and Node Native Modules",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jmhasbrouck/Specto.git"
+  },
+  "author": "James Hasbrouck (jmhasbrouck@ymail.com)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jmhasbrouck/Specto/issues"
+  },
+  "homepage": "https://github.com/jmhasbrouck/Specto#readme"
 }

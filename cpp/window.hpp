@@ -14,7 +14,8 @@
 ** You should have received a copy of the GNU General Public License
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
+namespace Window {
 void calc_kaiser_window (double * data, int datalen, double beta) ;
 
 void calc_nuttall_window (double * data, int datalen) ;
+}

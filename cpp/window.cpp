@@ -20,16 +20,16 @@
 #include <assert.h>
 #include <math.h>
 
-#include "window.h"
+#include "window.hpp"
 
 #define ARRAY_LEN(x)		((int) (sizeof (x) / sizeof (x [0])))
 
-
+namespace Window {
 static double besseli0 (double x) ;
 static double factorial (int k) ;
 
 void
-calc_kaiser_window (double * data, int datalen, double beta)
+Window::calc_kaiser_window (double * data, int datalen, double beta)
 {
 	/*
 	**          besseli0 (beta * sqrt (1- (2*x/N).^2))
@@ -57,7 +57,7 @@ calc_kaiser_window (double * data, int datalen, double beta)
 } /* calc_kaiser_window */
 
 void
-calc_nuttall_window (double * data, int datalen)
+Window::calc_nuttall_window (double * data, int datalen)
 {
     const double a [4] = { 0.355768, 0.487396, 0.144232, 0.012604 } ;
 	int k ;
@@ -83,7 +83,7 @@ calc_nuttall_window (double * data, int datalen)
 */
 
 static double
-besseli0 (double x)
+Window::besseli0 (double x)
 {	int k ;
 	double result = 0.0 ;
 
@@ -147,3 +147,4 @@ init_test (void)
 
 } /* init_test */
 
+}

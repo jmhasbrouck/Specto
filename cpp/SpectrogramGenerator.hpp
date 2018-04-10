@@ -29,7 +29,7 @@
 #include <math.h>
 #include <fftw3.h>
 
-#include "window.h"
+#include "window.hpp"
 
 #define MIN_WIDTH 640
 #define MIN_HEIGHT 480
@@ -49,7 +49,6 @@ typedef struct
 #define ARRAY_LEN(x) ((int)(sizeof(x) / sizeof(x[0])))
 #define MAX(x, y) ((x) > (y) ? (x) : (y))
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
-
 void getSpecData(const char *image_data, const double *pcm_data, int height, int width, double minDb, int samplerate);
 }
 #endif

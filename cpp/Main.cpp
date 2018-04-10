@@ -1,7 +1,6 @@
 #include <node.h>
 #include "SpectrogramGenerator.hpp"
-namespace ElectronLAC {
-
+namespace SpectrogramGenerator {
 using v8::FunctionCallbackInfo;
 using v8::Isolate;
 using v8::Local;
@@ -31,8 +30,8 @@ void CalculateSpectrogram(const FunctionCallbackInfo<Value>& args) {
 }
 
 void init(Local<Object> exports) {
-  NODE_SET_METHOD(exports, "CalculateSpectrogram", CalculateSpectrogram);
+  NODE_SET_METHOD(exports, "CalculateSpectrogram", SpectrogramGenerator::CalculateSpectrogram);
 }
 
 NODE_MODULE(SPG, init)
-}  // namespace ElectronLAC
+}

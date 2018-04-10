@@ -8,6 +8,7 @@ const minorYTicks = 80;
 const majorYTicks = 9;
 const axisWidth = 2;
 // globals
+// todo: get rid of all these globals!
 var spg;
 var canvas;
 var xCanvas;
@@ -16,7 +17,7 @@ var xaxis;
 var yaxis;
 var webGl;
 var filename;
-var data;
+var image_data;
 var glData;
 var lowestDB;
 var highestDB;
@@ -58,7 +59,7 @@ function setGlobals() {
     mousetime = new Time(0,0,0);
     mousefrequency = 0;
     audiolength=0;
-    data = new Uint8Array(glWidth * glHeight * 3);
+    image_data = new Uint8Array(glWidth * glHeight * 3);
 }
 
 window.requestAnimationFrame = window.requestAnimationFrame || ( function() {

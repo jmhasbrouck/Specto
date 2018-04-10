@@ -1,4 +1,5 @@
 var fs = require('fs');
+spg = require('./cpp/build/release/SPG');
 var noop = function(){};
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
@@ -35,8 +36,9 @@ audio.loadFile = function(file) {
             sourceNode.connect(analyser);
             fs.readFile(file, (err, data) => {
                 var visualCtx = new AudioContext();
-                visualCtx.decodeAudioData(data.buffer).then(function(decodedData) {
-                    console.log(decodedData);
+                visualCtx.decodeAudioData(data.buffer).then(function(pcm_data) {
+                    sampleRate = visualCtx.sampleRate;
+                    spg.CalculateSpectrogram(glHeight, glWidth, -180, visualCtx.sampleRate, image_data, pcm_data)
                 });
             })
             const once = function (target, event, callback) {

@@ -8,7 +8,7 @@
 #include <fenv.h>
 //#include <omp.h>
 #include "SpectrogramGenerator.hpp"
-#include "window.h"
+#include "window.hpp"
 
 #define MIN_WIDTH 640
 #define MIN_HEIGHT 480
@@ -92,7 +92,7 @@ void apply_window(double *data, int datalen)
 			exit(1);
 		};
 
-		calc_kaiser_window(window, datalen, 20.0);
+		Window::calc_kaiser_window(window, datalen, 20.0);
 	};
 
 	for (k = 0; k < datalen; k++)
@@ -222,7 +222,7 @@ void calculate(const RENDER *render)
 
 } /* render_to_surface */
 
-void getSpecData(const unsigned char *image_data, const double *pcm_data, int height, int width, double minDb, int samplerate)
+void getSpecData(const char *image_data, const double *pcm_data, int height, int width, double minDb, int samplerate)
 {
 	RENDER render;
 	int k;
