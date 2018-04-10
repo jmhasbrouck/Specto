@@ -98,7 +98,7 @@ function createProgram(gl, vertexShaderSource, fragmentShaderSource) {
 function loadTexture() {
     // loading the data into the texture object.
 
-    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB, glHeight , glWidth, 0,gl.RGB,gl.UNSIGNED_BYTE, data);
+    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB, glHeight , glWidth, 0,gl.RGB,gl.UNSIGNED_BYTE, image_data);
     
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);

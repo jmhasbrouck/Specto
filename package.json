@@ -4,11 +4,13 @@
   "version": "1.0.0",
   "main": "main.js",
   "devDependencies": {
+    "audio-decode": "^1.4.0",
     "electron": "^1.8.4",
     "jquery": "^3.3.1",
     "pan-zoom": "^2.0.0"
   },
   "dependencies": {
+    "audio-lena": "^2.1.1",
     "electron-screenshot": "^1.0.4",
     "node-gyp": "^3.6.2",
     "panzoom": "^2.5.0"

@@ -14,10 +14,8 @@
 #define MIN_HEIGHT 480
 #define MAX_WIDTH 8192
 #define MAX_HEIGHT 4096
-
+#define RESOLUTION 20 //hz
 #define DEBUG
-namespace SpectrogramGenerator
-{
 unsigned char *staticData = 0;
 
 void get_colour_map_value(float value, double spec_floor_db, unsigned char colour[3])
@@ -86,13 +84,8 @@ void apply_window(double *data, int datalen)
 	if (window_len != datalen)
 	{
 		window_len = datalen;
-		if (datalen > ARRAY_LEN(window))
-		{
-			printf("%s : datalen >  MAX_HEIGHT\n", __func__);
-			exit(1);
-		};
 
-		Window::calc_kaiser_window(window, datalen, 20.0);
+		Window::calc_kaiser_window(window, datalen, RESOLUTION);
 	};
 
 	for (k = 0; k < datalen; k++)
@@ -128,7 +121,7 @@ void render_spectrogram(double spec_floor_db, float mag2d[MAX_WIDTH][MAX_HEIGHT]
 #ifdef DEBUG
 	printf("height: %f, width: %f\n", height, width);
 #endif
-	linear_spec_floor = pow(10.0, spec_floor_db / 20.0);
+	linear_spec_floor = pow(10.0, spec_floor_db / RESOLUTION);
 	size_t counter = 0;
 	//#pragma omp parallel for simd collapse(2) schedule(dynamic)
 	for (w = 0; w < wdth; w++)
@@ -136,7 +129,7 @@ void render_spectrogram(double spec_floor_db, float mag2d[MAX_WIDTH][MAX_HEIGHT]
 		for (h = 0; h < hght; h++)
 		{
 			mag2d[w][h] = mag2d[w][h] / maxval;
-			mag2d[w][h] = (mag2d[w][h] < linear_spec_floor) ? spec_floor_db : 20.0 * log10(mag2d[w][h]);
+			mag2d[w][h] = (mag2d[w][h] < linear_spec_floor) ? spec_floor_db : RESOLUTION * log10(mag2d[w][h]);
 
 			get_colour_map_value(mag2d[w][h], spec_floor_db, colour);
 
@@ -155,7 +148,7 @@ void interp_spec(float *mag, int maglen, const double *spec, int speclen)
 {
 	int k, lastspec = 0;
 
-	mag[0] = spec[0];
+	mag[0] = static_cast<float>(spec[0]);
 
 	for (k = 1; k < maglen; k++)
 	{
@@ -175,30 +168,19 @@ void interp_spec(float *mag, int maglen, const double *spec, int speclen)
 
 void calculate(const RENDER *render)
 {
-	double *time_domain = render->pcm_data;
-	static double freq_domain[10 * MAX_HEIGHT];
+    static double *time_domain = render->pcm_data;
+	static double *freq_domain = new double[render->number_of_samples];
 	static double single_mag_spec[5 * MAX_HEIGHT];
 	static float mag_spec[MAX_WIDTH][MAX_HEIGHT];
 
 	fftw_plan plan;
 	double max_mag = 0.0;
-	int width, height, w, speclen;
+	int width, height, w;
+    long long spectrum_length;
 	width = render->width;
 	height = render->height;
-	/*
-	 **	Choose a speclen value that is long enough to represent frequencies down
-	 **	to 20Hz, and then increase it slightly so it is a multiple of 0x40 so that
-	 **	FFTW calculations will be quicker.
-	 */
-	speclen = height * (render->sample_rate / 20 / height + 1);
-	speclen += 0x40 - (speclen & 0x3f);
-	if (2 * speclen > ARRAY_LEN(time_domain))
-	{
-		printf("%s : 2 * speclen > ARRAY_LEN (time_domain)\n", __func__);
-		exit(1);
-	};
-
-	plan = fftw_plan_r2r_1d(2 * speclen, time_domain, freq_domain, FFTW_R2HC, FFTW_MEASURE | FFTW_PRESERVE_INPUT);
+    spectrum_length = render->number_of_samples / width;
+	plan = fftw_plan_r2r_1d(spectrum_length, time_domain, freq_domain, FFTW_R2HC, FFTW_MEASURE | FFTW_PRESERVE_INPUT);
 	if (plan == NULL)
 	{
 		printf("%s : line %d : create plan failed.\n", __FILE__, __LINE__);
@@ -208,36 +190,39 @@ void calculate(const RENDER *render)
 	//#pragma omp parallel for simd schedule(dynamic) reduction(max:max_mag, single_max)
 	for (w = 0; w < width; w++)
 	{
-		apply_window(time_domain, 2 * speclen);
+        Window::calc_kaiser_window(time_domain, spectrum_length, RESOLUTION);
 		fftw_execute(plan);
 
-		single_max = calc_magnitude(freq_domain, 2 * speclen, single_mag_spec);
+		single_max = calc_magnitude(freq_domain, spectrum_length, single_mag_spec);
 		max_mag = MAX(max_mag, single_max);
 
-		interp_spec(mag_spec[w - render->dataOffset], height, single_mag_spec, speclen);
+		interp_spec(mag_spec[w - render->dataOffset], height, single_mag_spec, spectrum_length);
+        time_domain = (time_domain + spectrum_length);
 	};
 
 	fftw_destroy_plan(plan);
 	render_spectrogram(render->spec_floor_db, mag_spec, max_mag, width, height);
+    delete[] freq_domain;
+} 
 
-} /* render_to_surface */
-
-void getSpecData(const char *image_data, const double *pcm_data, int height, int width, double minDb, int samplerate)
+void getSpecData(const char *image_data, const double *pcm_data, int height, int width, double min_db, int samplerate, long long number_of_samples)
 {
 	RENDER render;
 	int k;
 	staticData = (unsigned char*)image_data;
-	if (staticData == 0)
+	if (staticData == 0 || pcm_data == 0)
 	{
+		printf("image or pcm data was null!");
 		return;
 	}
 	memset(staticData, 0, height * width * 3);
-	render.spec_floor_db = minDb;
+	render.spec_floor_db = min_db;
 	render.log_freq = false;
 	render.width = width;
 	render.height = height;
 	render.sample_rate = samplerate;
 	render.pcm_data = (double*)pcm_data;
+	render.number_of_samples = number_of_samples;
+    render.dataOffset = 0;
 	calculate(&render);
-}
 }

@@ -26,7 +26,7 @@ audio.playPause = function() {
     }
 };
 
-audio.loadFile = function(file) {
+audio.loadFile = function(file, ipcRenderer) {
     audio.stop();
     return new Promise(function(resolve, reject) {
         if (!audioElement) {
@@ -36,9 +36,15 @@ audio.loadFile = function(file) {
             sourceNode.connect(analyser);
             fs.readFile(file, (err, data) => {
                 var visualCtx = new AudioContext();
-                visualCtx.decodeAudioData(data.buffer).then(function(pcm_data) {
+                visualCtx.decodeAudioData(data.buffer).then(function(audio_buffer) {
                     sampleRate = visualCtx.sampleRate;
-                    spg.CalculateSpectrogram(glHeight, glWidth, -180, visualCtx.sampleRate, image_data, pcm_data)
+                    var pcm_data = new Float64Array(audio_buffer.getChannelData(0));
+                    maxFrequency = sampleRate;
+                    audiolength = audio_buffer.duration;
+                    spg.CalculateSpectrogram(glHeight, glWidth, -180, visualCtx.sampleRate, pcm_data.length, image_data, pcm_data);
+                    glInit();
+                    ipcRenderer.send('done with spg calculations', null);
+                    animate();
                 });
             })
             const once = function (target, event, callback) {

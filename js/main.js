@@ -30,14 +30,10 @@ function init() {
     ipcRenderer.once('replyFromMain', (event, arg) => {
         filename = arg;
         document.title = filename;
-        audio.loadFile(arg);
-        console.log(arg);
+        audio.loadFile(arg, ipcRenderer);
         xaxis = new xAxis(window.getComputedStyle(document.body).fontSize,
             window.getComputedStyle(document.body).fontStyle, audiolength);
         yaxis = new yAxis(window.getComputedStyle(document.body).fontSize,
             window.getComputedStyle(document.body).fontStyle, 0, freqres * glHeight);
-        glInit();
-        ipcRenderer.send('done with spg calculations', null);
-        animate();
     });
 }

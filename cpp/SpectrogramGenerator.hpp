@@ -34,9 +34,8 @@
 #define MIN_WIDTH 640
 #define MIN_HEIGHT 480
 #define MAX_WIDTH 8192
-#define MAX_HEIGHT 4096
-namespace SpectrogramGenerator
-{
+#define MAX_HEIGHT 409
+
 typedef struct
 {
 	int width, height, dataOffset;
@@ -44,11 +43,12 @@ typedef struct
 	double spec_floor_db;
 	int sample_rate;
 	double *pcm_data;
+	long long number_of_samples;
 } RENDER;
 
 #define ARRAY_LEN(x) ((int)(sizeof(x) / sizeof(x[0])))
 #define MAX(x, y) ((x) > (y) ? (x) : (y))
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
-void getSpecData(const char *image_data, const double *pcm_data, int height, int width, double minDb, int samplerate);
-}
+
+void getSpecData(const char *image_data, const double *pcm_data, int height, int width, double minDb, int samplerate, long long number_of_samples);
 #endif
