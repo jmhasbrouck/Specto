@@ -24,16 +24,13 @@ function init() {
     yCanvas = $("#yAxis")[0];
     setGlobals();
     addEventHandlers();
-    drawLegend(-120, 0,
+    drawLegend(-180, 0,
         window.getComputedStyle(document.body).fontSize,
         window.getComputedStyle(document.body).fontStyle);
     ipcRenderer.once('replyFromMain', (event, arg) => {
         filename = arg;
+        console.log("filename: " + filename);
         document.title = filename;
         audio.loadFile(arg, ipcRenderer);
-        xaxis = new xAxis(window.getComputedStyle(document.body).fontSize,
-            window.getComputedStyle(document.body).fontStyle, audiolength);
-        yaxis = new yAxis(window.getComputedStyle(document.body).fontSize,
-            window.getComputedStyle(document.body).fontStyle, 0, freqres * glHeight);
     });
 }

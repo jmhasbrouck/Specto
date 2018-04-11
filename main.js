@@ -11,7 +11,7 @@ var filename;
 function createWindow() {
     const { width, height } = electron.screen.getPrimaryDisplay().workAreaSize
 
-    win = new BrowserWindow({ frame: true, width: width, height: height, show: true })
+    win = new BrowserWindow({ frame: true, width: width, height: height, show: false })
     win.loadURL(url.format({
         pathname: path.join(__dirname, 'index.html'),
         protocol: 'file:',
@@ -76,6 +76,7 @@ function createSplash() {
 // inter-process communication
 ipcMain.on('messageFromSplash', (event, arg) => {
     filename = arg[0];
+    console.log(filename);
     renderwin.show();
     splashwin.hide();
     renderwin.webContents.send('filename', filename);

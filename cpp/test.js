@@ -11,10 +11,12 @@ fs.readFile(process.argv[1], (err, data) => {
         sampleRate = (audio_buffer.length/ audio_buffer.numberOfChannels) / audio_buffer.duration;
         var pcm_data = new Float64Array(audio_buffer.getChannelData(0));
         maxFrequency = sampleRate;
-        spg.CalculateSpectrogram(8192, 4096, -180, sampleRate, pcm_data.length, new Uint8Array(4096 * 8192 * 3), pcm_data);
+        spg.CalculateSpectrogram(4096, 8192, -180, sampleRate, pcm_data.length, new Uint8Array(4096 * 8192 * 3), pcm_data);
         glInit();
         ipcRenderer.send('done with spg calculations', null);
     }, err => {
         console.log(err)
-    }) 
+    }).catch((reason) => {
+        console.log(reason)
+    })
 })

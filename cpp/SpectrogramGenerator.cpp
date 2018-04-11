@@ -6,16 +6,15 @@
 #include <math.h>
 #include <fftw3.h>
 #include <fenv.h>
-//#include <omp.h>
 #include "SpectrogramGenerator.hpp"
 #include "window.hpp"
-
+#include <cmath>
 #define MIN_WIDTH 640
 #define MIN_HEIGHT 480
 #define MAX_WIDTH 8192
 #define MAX_HEIGHT 4096
 #define RESOLUTION 20 //hz
-#define DEBUG
+
 unsigned char *staticData = 0;
 
 void get_colour_map_value(float value, double spec_floor_db, unsigned char colour[3])
@@ -75,12 +74,10 @@ void get_colour_map_value(float value, double spec_floor_db, unsigned char colou
 	colour[2] = lrintf((1.0 - rem) * map[indx][2] + rem * map[indx + 1][2]);
 } /* get_colour_map_value */
 
+static double window[10 * MAX_HEIGHT];
+static int window_len = 0;
 void apply_window(double *data, int datalen)
 {
-	static double window[10 * MAX_HEIGHT];
-	static int window_len = 0;
-	int k;
-
 	if (window_len != datalen)
 	{
 		window_len = datalen;
@@ -88,7 +85,7 @@ void apply_window(double *data, int datalen)
 		Window::calc_kaiser_window(window, datalen, RESOLUTION);
 	};
 
-	for (k = 0; k < datalen; k++)
+	for (int k = 0; k < datalen; k++)
 		data[k] *= window[k];
 }
 
@@ -110,6 +107,7 @@ calc_magnitude(const double *freq, int freqlen, double *magnitude)
 
 void render_spectrogram(double spec_floor_db, float mag2d[MAX_WIDTH][MAX_HEIGHT], double maxval, double width, double height)
 {
+    printf("%s", __func__);
 	unsigned char colour[3] = {0, 0, 0};
 
 	double linear_spec_floor;
@@ -165,51 +163,62 @@ void interp_spec(float *mag, int maglen, const double *spec, int speclen)
 		mag[k] = sum / count;
 	};
 } /* interp_spec */
-
+inline int calculate_jump(int index, int total_samples, int width, int spectrum_length)
+{
+	return std::abs((index * total_samples) / width - spectrum_length / 2);
+}
 void calculate(const RENDER *render)
 {
-    static double *time_domain = render->pcm_data;
-	static double *freq_domain = new double[render->number_of_samples];
 	static double single_mag_spec[5 * MAX_HEIGHT];
 	static float mag_spec[MAX_WIDTH][MAX_HEIGHT];
 
 	fftw_plan plan;
 	double max_mag = 0.0;
-	int width, height, w;
-    long long spectrum_length;
+	int width, height, w, samplerate, spectrum_length;
+	samplerate = render->sample_rate;
 	width = render->width;
 	height = render->height;
-    spectrum_length = render->number_of_samples / width;
+    spectrum_length = height * (samplerate / RESOLUTION / height + 1) ;
+    spectrum_length += 0x40 - (spectrum_length & 0x3f) ;
+	int total_bytes = render->number_of_samples * sizeof(double);
+    int jmp = 0;
+    double single_max;
+	static double *time_domain = new double[spectrum_length];
+    memset(time_domain, 0, spectrum_length);
+	static double *freq_domain = new double[spectrum_length];
+    memset(freq_domain, 0, spectrum_length);
 	plan = fftw_plan_r2r_1d(spectrum_length, time_domain, freq_domain, FFTW_R2HC, FFTW_MEASURE | FFTW_PRESERVE_INPUT);
 	if (plan == NULL)
 	{
 		printf("%s : line %d : create plan failed.\n", __FILE__, __LINE__);
 		exit(1);
 	};
-	double single_max;
-	//#pragma omp parallel for simd schedule(dynamic) reduction(max:max_mag, single_max)
 	for (w = 0; w < width; w++)
 	{
-        Window::calc_kaiser_window(time_domain, spectrum_length, RESOLUTION);
+        if(jmp + spectrum_length > render->number_of_samples) {
+            printf("jmp + spectrum length > number of samples");
+            break;
+        }
+        memcpy(time_domain, &render->pcm_data[jmp], spectrum_length);
+        apply_window(time_domain, spectrum_length);
 		fftw_execute(plan);
 
 		single_max = calc_magnitude(freq_domain, spectrum_length, single_mag_spec);
 		max_mag = MAX(max_mag, single_max);
 
 		interp_spec(mag_spec[w - render->dataOffset], height, single_mag_spec, spectrum_length);
-        time_domain = (time_domain + spectrum_length);
+        jmp = std::abs((w * render->number_of_samples) / width - spectrum_length / 2);
 	};
-
+	delete[] time_domain;
+	delete[] freq_domain;
 	fftw_destroy_plan(plan);
 	render_spectrogram(render->spec_floor_db, mag_spec, max_mag, width, height);
-    delete[] freq_domain;
-} 
+}
 
 void getSpecData(const char *image_data, const double *pcm_data, int height, int width, double min_db, int samplerate, long long number_of_samples)
 {
 	RENDER render;
-	int k;
-	staticData = (unsigned char*)image_data;
+	staticData = (unsigned char *)image_data;
 	if (staticData == 0 || pcm_data == 0)
 	{
 		printf("image or pcm data was null!");
@@ -221,8 +230,8 @@ void getSpecData(const char *image_data, const double *pcm_data, int height, int
 	render.width = width;
 	render.height = height;
 	render.sample_rate = samplerate;
-	render.pcm_data = (double*)pcm_data;
+	render.pcm_data = (double *)pcm_data;
 	render.number_of_samples = number_of_samples;
-    render.dataOffset = 0;
+	render.dataOffset = 0;
 	calculate(&render);
 }

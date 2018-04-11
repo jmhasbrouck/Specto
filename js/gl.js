@@ -33,7 +33,7 @@ var u_matrix_location;
 var u_texture_location;
 var u_progress_location;
 var textureObject;    
-var coords = new Float32Array( [ 0,0, 1,0, 1,1, 0,0, 0,1, 1,1] );
+var coords = new Float32Array(    [ 0,0, 1,0, 1,1, 0,0, 0,1, 1,1] );
 var texCoords = new Float32Array( [ 0,0, 0,1, 1,1, 0,0, 1,0, 1,1] );
 var matrix = new Array(9);
 /**
